@@ -14,9 +14,9 @@ def scalacOptionsVersion(scalaVersion: String): Seq[String] = {
 
 def javacOptionsVersion(scalaVersion: String): Seq[String] = Seq("-source", "1.8", "-target", "1.8")
 
-name := "COD-2019 by iBug"
+name := "USTC RISC-V"
 
-version := "2019.2.26.0"
+version := "0.0.1-alpha"
 
 scalaVersion := "2.12.8"
 
