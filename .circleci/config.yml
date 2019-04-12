@@ -1,0 +1,46 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    environment:
+      JVM_OPTS: -Xmx2048m
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - dep-{{ .Branch }}
+            - dep-master
+      - run:
+          name: Update SBT Dependency
+          command: sbt update
+      - run:
+          name: Cleanup cache
+          command: |
+            rm -fv $HOME/.ivy2/.sbt.ivy.lock
+            find $HOME/.ivy2/cache -name "ivydata-*.properties" -print -delete
+            find $HOME/.sbt -name "*.lock" -print -delete
+      - save_cache:
+          paths:
+            - ~/.sbt
+            - ~/.ivy2/cache
+          key: dep-{{ .Branch }}
+      - run:
+          name: Run SBT
+          command: sbt "scalastyle" "test:runMain TestAll" "runMain Main"
+      - run:
+          name: Collect Artifacts
+          command: |
+            find target/ -name '*.v' -print0 | xargs -0r tar zcf verilog.tar.gz
+            mkdir -p waveforms && find test_run_dir/ -name '*.vcd' -print0 | xargs -0rI % mv % waveforms/ && tar zcf waveforms.tar.gz waveforms
+      - store_artifacts:
+          path: target/scalastyle-result.xml
+      - store_artifacts:
+          path: verilog.tar.gz
+      - store_artifacts:
+          path: waveforms.tar.gz
+
+general:
+  branches:
+    only:
+      - master
