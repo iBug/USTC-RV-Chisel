@@ -27,7 +27,7 @@ jobs:
           key: dep-{{ .Branch }}
       - run:
           name: Run SBT
-          command: sbt "scalastyle" "test:runMain TestAll" "runMain Main"
+          command: sbt "scalastyle" "test:runMain ustcrv.Main" "runMain ustcrv.Main"
       - run:
           name: Collect Artifacts
           command: |

@@ -3,7 +3,7 @@ dist: xenial
 language: scala
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION scalastyle "test:runMain Main" "runMain Main"
+  - sbt ++$TRAVIS_SCALA_VERSION scalastyle "test:runMain ustcrv.Main" "runMain ustcrv.Main"
 
 cache:
   directories:
