@@ -18,6 +18,8 @@ name := "USTC RISC-V"
 
 version := "0.0.1-alpha"
 
+mainClass in (Compile, run) := Some("ustcrv.Main")
+
 scalaVersion := "2.12.8"
 
 crossScalaVersions := Seq("2.11.12", "2.12.8")
