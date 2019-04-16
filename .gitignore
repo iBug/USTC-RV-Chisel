@@ -18,3 +18,9 @@ project/plugins/project/
 
 ### Chisel ###
 test_run_dir
+
+### macOS ###
+.DS_Store
+
+### IDEA ###
+.idea
