@@ -30,5 +30,5 @@ class ImmGen extends Module {
     Imm.B -> iB,
     Imm.U -> iU,
     Imm.J -> iJ
-  ))
+  )).asUInt
 }
