@@ -22,9 +22,17 @@ object ALU {
   // Abusing unused assignments - be careful about this!
   val COPY_A = "b1010".U(wControl.W)
   val COPY_B = "b1011".U(wControl.W)
+
+  def apply(w: Int, a: UInt, b: UInt, sel: UInt): UInt = {
+    val m = Module(new ALU(w)).io
+    m.a := a
+    m.b := b
+    m.sel := sel
+    m.out
+  }
 }
 
-class ALU(w: Int) extends Module {
+class ALU(val w: Int) extends Module {
   val io = IO(new Bundle {
     val a = Input(UInt(w.W))
     val b = Input(UInt(w.W))

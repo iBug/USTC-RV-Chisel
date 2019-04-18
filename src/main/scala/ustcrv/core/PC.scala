@@ -3,6 +3,17 @@ package ustcrv.core
 import chisel3._
 import chisel3.util._
 
+// w: width, s: step
+object PC {
+  def apply(en: Bool, sel: UInt, in: UInt, w: Int = 32, s: Int = 4): UInt = {
+    val m = Module(new PC(w, s)).io
+    m.en := en
+    m.sel := sel
+    m.in := in
+    m.out
+  }
+}
+
 class PC(val w: Int = 32, val s: Int = 4) extends Module {
   val io = IO(new Bundle {
     val out = Output(UInt(w.W))

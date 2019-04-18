@@ -9,6 +9,13 @@ object Imm {
   val B = 2.U(3.W)  // Branch
   val U = 3.U(3.W)  // Upper Immediate
   val J = 4.U(3.W)  // Jump
+
+  def apply(in: UInt, sel: UInt): UInt = {
+    val m = Module(new ImmGen).io
+    m.in := in
+    m.sel := sel
+    m.out
+  }
 }
 
 class ImmGen extends Module {
