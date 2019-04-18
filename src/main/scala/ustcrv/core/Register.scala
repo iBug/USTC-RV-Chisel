@@ -20,7 +20,7 @@ class RegisterFile(val wData: Int, val wAddr: Int) extends Module {
   io.rd0 := r(io.ra0)
   io.rd1 := r(io.ra1)
 
-  when (io.we && io.wa0 =/= 0.U) {
+  when (io.we && io.wa0 =/= 0.U) {  // x0 should be always zero
     r(io.wa0) := io.wd0
   }
 }

@@ -6,6 +6,8 @@ import chisel3.util._
 object ALU {
   val wControl: Int = 4
 
+  // low 3-bit: funct3
+  // high 1-bit: whether funct7 is not all zero in R-format
   val ADD  = "b0000".U(wControl.W)
   val SUB  = "b1000".U(wControl.W)
   val SLL  = "b0001".U(wControl.W)

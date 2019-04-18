@@ -4,11 +4,11 @@ import chisel3._
 import chisel3.util._
 
 object Imm {
-  val I = 0.U(3.W)
-  val S = 1.U(3.W)
-  val B = 2.U(3.W)
-  val U = 3.U(3.W)
-  val J = 4.U(3.W)
+  val I = 0.U(3.W)  // Immediate
+  val S = 1.U(3.W)  // Store
+  val B = 2.U(3.W)  // Branch
+  val U = 3.U(3.W)  // Upper Immediate
+  val J = 4.U(3.W)  // Jump
 }
 
 class ImmGen extends Module {
