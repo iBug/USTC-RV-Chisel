@@ -18,6 +18,10 @@ object ALU {
   val SRA  = "b1101".U(wControl.W)
   val OR   = "b0110".U(wControl.W)
   val AND  = "b1111".U(wControl.W)
+
+  // Abusing unused assignments - be careful about this!
+  val COPY_A = "b1010".U(wControl.W)
+  val COPY_B = "b1011".U(wControl.W)
 }
 
 class ALU(w: Int) extends Module {
@@ -40,6 +44,8 @@ class ALU(w: Int) extends Module {
     ALU.SRL  -> (io.a >> shamt),
     ALU.SRA  -> (io.a.asSInt >> shamt).asUInt,
     ALU.OR   -> (io.a | io.b),
-    ALU.AND  -> (io.a & io.b)
+    ALU.AND  -> (io.a & io.b),
+    ALU.COPY_A -> io.a,
+    ALU.COPY_B -> io.b
   ))
 }
