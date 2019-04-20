@@ -4,6 +4,8 @@ import chisel3._
 import chisel3.util._
 import org.stringtemplate.v4.compiler.Bytecode.Instruction
 
+import Instructions._
+
 class ControlIO extends Bundle {
   val inst = Input(UInt(32.W))
   // according to https://inst.eecs.berkeley.edu/~cs61c/fa17/lec/11/L11_Datapath1%20(1up).pdf P48
@@ -16,8 +18,6 @@ class ControlIO extends Bundle {
   val WBsel = Output(Bool())  // 0: reg2, 1: (signed-ext) imm
 }
 
-import Instructions._
-
 class Control extends Module {
   val io = IO(new ControlIO)
 
@@ -29,10 +29,10 @@ class Control extends Module {
   val default = List(N,     N,      N,      ALU.ADD,    N,      N,        N)
 
   val map = Array(
-    ADD  ->     List(N,     N,      N,      ALU.ADD,    N,      N,        Y),
-    ADDI ->     List(N,     N,      N,      ALU.ADD,    N,      Y,        Y),
-    SUB  ->     List(N,     N,      N,      ALU.SUB,    N,      N,        Y),
-    LUI  ->     List(N,     N,      N,      ALU.???,    N,      Y,        Y),
-    AUIPC->     List(N,     N,      N,      ALU.ADD,    N,      Y,        N),
+    ADD    ->   List(N,     N,      N,      ALU.ADD,    N,      N,        Y),
+    ADDI   ->   List(N,     N,      N,      ALU.ADD,    N,      Y,        Y),
+    SUB    ->   List(N,     N,      N,      ALU.SUB,    N,      N,        Y),
+    LUI    ->   List(N,     N,      N,      ALU.COPY_B, N,      Y,        Y),
+    AUIPC  ->   List(N,     N,      N,      ALU.ADD,    N,      Y,        N)
   )
 }
