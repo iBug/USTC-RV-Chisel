@@ -9,8 +9,9 @@ Chisel implementation of USTC RISC-V
 - Hardware Design
   - Implement RISC-V RV32I ISA (user instructions)
   - Implement RISC-V RV32I ISA (privileged instructions)
+  - Verify the design is running properly
   - Program implementation to Nexys4 DDR board
-- Toolchain part
+- Toolchain research
   - Find out C-to-bare-metal compilation route
   - Find out how to debug RISC-V programs
 - Combined
@@ -21,3 +22,8 @@ Chisel implementation of USTC RISC-V
 ## Done list
 
 - TBA
+
+## References
+
+- https://github.com/watz0n/learn-rv32i-asap
+- https://cnrv.io/
