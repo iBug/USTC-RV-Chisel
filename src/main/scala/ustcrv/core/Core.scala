@@ -11,5 +11,5 @@ class Core extends Module {
   val regFile = Module(new RegisterFile(32, 5)).io
   val branchComp = Module(new BranchComp(32)).io
 
-  val pc = DontCare
+  val pc = Module(new PC).io
 }
