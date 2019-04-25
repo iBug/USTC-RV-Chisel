@@ -12,8 +12,8 @@ class BranchComp(val w: Int) extends Module {
     val brEq = Output(Bool())
   })
 
-  val sa = a.asSInt
-  val sb = b.asSInt
-  io.brLt = Mux(io.brUn, a < b, sa < sb)
-  io.brEq = Mux(io.brUn, a === b, sa === sb)
+  val sa = io.a.asSInt
+  val sb = io.b.asSInt
+  io.brLt := Mux(io.brUn, io.a < io.b, sa < sb)
+  io.brEq := Mux(io.brUn, io.a === io.b, sa === sb)
 }
