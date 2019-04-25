@@ -16,7 +16,7 @@ class BranchComp(val w: Int) extends Module {
   val io = IO(new Bundle {
     val a = Input(UInt(w.W))
     val b = Input(UInt(w.W))
-    val type = Input(UInt(3.W))
+    val brType = Input(UInt(3.W))
     val taken = Output(Bool())
   })
 
@@ -24,7 +24,7 @@ class BranchComp(val w: Int) extends Module {
   val b = io.b
   val sa = a.asSInt
   val sb = b.asSInt
-  io.taken := MuxLookup(io.type, false.B, Array(
+  io.taken := MuxLookup(io.brType, false.B, Array(
     Branch.EQ  -> ( a ===  b),
     Branch.NE  -> ( a =/=  b),
     Branch.LT  -> (sa  <  sb),
