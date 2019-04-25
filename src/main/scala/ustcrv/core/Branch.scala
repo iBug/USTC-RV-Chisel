@@ -4,7 +4,8 @@ import chisel3._
 import chisel3.util._
 
 object Branch {
-  val EQ  = 0.U
+  val XX  = 0.U
+  val EQ  = 4.U
   val NE  = 1.U
   val LT  = 2.U
   val GE  = 3.U
