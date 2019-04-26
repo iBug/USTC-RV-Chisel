@@ -2,7 +2,6 @@ package ustcrv.core
 
 import chisel3._
 import chisel3.util._
-import org.stringtemplate.v4.compiler.Bytecode.Instruction
 
 import Instructions._
 import Branch._
@@ -92,11 +91,11 @@ class Control extends Module {
     SRLI   ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.SRL,   MEM_R,   WB_ALU),
     SUB    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.SUB,   MEM_R,   WB_ALU),
     XOR    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.XOR,   MEM_R,   WB_ALU),
-    XORI   ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.XOR,   MEM_R,   WB_ALU),
+    XORI   ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.XOR,   MEM_R,   WB_ALU)
   )
 
   val CtrlSignals = ListLookup(io.inst, default, map)
-  
+
   io.PCSel := Mux(io.BrTaken, PC_ALU, CtrlSignals(0))
   io.ImmSel := CtrlSignals(1)
   io.RegWEn := CtrlSignals(2)
