@@ -31,7 +31,7 @@ class ImmGen extends Module {
   val iU = Cat(io.in(31, 12), 0.U(12.W)).asSInt
   val iJ = Cat(io.in(31), io.in(19, 12), io.in(20), io.in(30, 25), io.in(24, 21), 0.U(1.W)).asSInt
 
-  io.out := MuxLookup(io.sel, 0.U(32.W), Array(
+  io.out := MuxLookup(io.sel, 0.S(32.W), Array(
     Imm.I -> iI,
     Imm.S -> iS,
     Imm.B -> iB,
