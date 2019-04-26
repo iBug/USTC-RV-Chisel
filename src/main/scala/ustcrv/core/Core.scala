@@ -4,7 +4,14 @@ import chisel3._
 import chisel3.util._
 
 class CoreIO extends Bundle {
-  // hmmmm
+  val enable = Input(Bool()) // CPU pause when zero
+  val imemIn = Output(UInt(32.W))
+  val imemOut = Input(UInt(32.W))
+  val dmemA = Output(UInt(32.W))
+  val dmemDR = Input(UInt(32.W))
+  val dmemDW = Output(UInt(32.W))
+  val dmemWE = Output(UInt(32.W))
+  val debug = Input(Bool())
 }
 
 class Core extends Module {
@@ -17,10 +24,7 @@ class Core extends Module {
   val immGen = Module(new ImmGen).io
   val pc = Module(new PC).io
 
-  val imem = Module(new IMem).io
-  val dmem = Module(new DMem).io
-
-  val inst = imem.out
+  val inst = io.imemOut
   control.inst := inst
 
   // Wires
@@ -29,9 +33,9 @@ class Core extends Module {
   // CS61c slide p.48, left to right
   pc.sel := control.PCSel
   pc.in := alu.out
-  pc.en := true.B
+  pc.en := io.enable
 
-  imem.in := pc.out
+  io.imemIn := pc.out
 
   regFile.addrA := inst(19, 15)
   regFile.addrB := inst(24, 20)
@@ -51,13 +55,13 @@ class Core extends Module {
   alu.b := Mux(control.BSel, immGen.out, regFile.dataB)
   alu.sel := control.ALUSel
 
-  dmem.addr := alu.out
-  dmem.dataW := regFile.dataB
-  dmem.memRW := control.MemRW
+  io.dmemA := alu.out
+  io.dmemDW := regFile.dataB
+  io.dmemWE := control.MemRW
 
   wb := MuxLookup(control.WBSel, 0.U(32.W), Array(
     0.U -> (pc.out + 4.U),
     1.U -> alu.out,
-    2.U -> dmem.dataR
+    2.U -> io.dmemDR
   ))
 }
