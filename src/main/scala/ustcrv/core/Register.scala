@@ -3,24 +3,24 @@ package ustcrv.core
 import chisel3._
 import chisel3.util._
 
-class RegisterFile(val wData: Int, val wAddr: Int) extends Module {
+class RegisterFile(val wData: Int = 32, val wAddr: Int = 5) extends Module {
   val io = IO(new Bundle {
-    val ra0 = Input(UInt(wAddr.W))
-    val ra1 = Input(UInt(wAddr.W))
-    val rd0 = Output(UInt(wData.W))
-    val rd1 = Output(UInt(wData.W))
-    val wa0 = Input(UInt(wAddr.W))
-    val wd0 = Input(UInt(wData.W))
-    val we = Input(Bool())
+    val addrA = Input(UInt(wAddr.W))
+    val addrB = Input(UInt(wAddr.W))
+    val dataA = Output(UInt(wData.W))
+    val dataB = Output(UInt(wData.W))
+    val addrD = Input(UInt(wAddr.W))
+    val dataD = Input(UInt(wData.W))
+    val regWEn = Input(Bool())
   })
 
   val regCount = 1 << wAddr // Number of registers
   val r = VecInit(Seq.fill(regCount)(RegInit(0.U(wData.W))))
 
-  io.rd0 := r(io.ra0)
-  io.rd1 := r(io.ra1)
+  io.dataA := r(io.addrA)
+  io.dataB := r(io.addrB)
 
-  when (io.we && io.wa0 =/= 0.U) {  // x0 should be always zero
-    r(io.wa0) := io.wd0
+  when (io.regWEn && io.addrD =/= 0.U) {  // x0 should be always zero
+    r(io.addrD) := io.dataD
   }
 }
