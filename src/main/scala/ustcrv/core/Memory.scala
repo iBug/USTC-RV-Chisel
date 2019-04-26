@@ -16,13 +16,15 @@ class IMem(val size: Int = 4096) extends Module {
 
 class DMem(val size: Int = 4096) extends Module {
   val io = IO(new Bundle {
-    val addr = Input(UInt(32.U))
-    val dataR = Output(UInt(32.U))
-    val dataW = Input(UInt(32.U))
+    val addr = Input(UInt(32.W))
+    val dataR = Output(UInt(32.W))
+    val dataW = Input(UInt(32.W))
     val memRW = Input(Bool())
   })
 
-  when (memRW) {
+  val mem = SyncReadMem(size, UInt(32.W))
+
+  when (io.memRW) {
     mem.write(io.addr, io.dataW)
     io.dataR := DontCare
   } .otherwise {
