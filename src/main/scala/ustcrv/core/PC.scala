@@ -23,6 +23,7 @@ class PC(val w: Int = 32, val s: Int = 4) extends Module {
   })
 
   val r = RegInit(0.U(w.W))
+  io.out := r
 
   when (io.en) {
     r := MuxLookup(io.sel, r + 4.U, Seq(

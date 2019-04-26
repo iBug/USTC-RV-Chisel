@@ -21,6 +21,7 @@ class Core extends Module {
   val dmem = Module(new DMem).io
 
   val inst = imem.out
+  control.inst := inst
 
   // Wires
   val wb = Wire(UInt(32.W))
@@ -36,6 +37,7 @@ class Core extends Module {
   regFile.addrB := inst(24, 20)
   regFile.addrD := inst(11, 7)
   regFile.dataD := wb
+  regFile.regWEn := control.RegWEn
 
   immGen.in := inst
   immGen.sel := control.ImmSel
