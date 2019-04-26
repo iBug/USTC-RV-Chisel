@@ -7,13 +7,12 @@ class IMem(val size: Int = 4096, val offset: Int = 0, val debug: Boolean = false
   val io = IO(new Bundle {
     val in = Input(UInt(32.W))
     val out = Output(UInt(32.W))
-    if (debug) {
-      val drAddr = Input(UInt(32.W))
-      val dwAddr = Input(UInt(32.W))
-      val drData = Output(UInt(32.W))
-      val dwData = Input(UInt(32.W))
-      val dMode = Input(Bool()) // 0 = read, 1 = write
-    }
+
+    val drAddr = Input(UInt(32.W))
+    val dwAddr = Input(UInt(32.W))
+    val drData = Output(UInt(32.W))
+    val dwData = Input(UInt(32.W))
+    val dMode = Input(Bool()) // 0 = read, 1 = write
   })
 
   val mem = SyncReadMem(size, UInt(32.W))
@@ -28,6 +27,8 @@ class IMem(val size: Int = 4096, val offset: Int = 0, val debug: Boolean = false
     } .otherwise {
       io.drData := mem.read(io.drAddr)
     }
+  } else {
+    io.drData := DontCare
   }
 }
 
@@ -37,13 +38,12 @@ class DMem(val size: Int = 4096, val offset: Int = 0, val debug: Boolean = false
     val dataR = Output(UInt(32.W))
     val dataW = Input(UInt(32.W))
     val memRW = Input(Bool())
-    if (debug) {
-      val drAddr = Input(UInt(32.W))
-      val dwAddr = Input(UInt(32.W))
-      val drData = Output(UInt(32.W))
-      val dwData = Input(UInt(32.W))
-      val dMode = Input(Bool()) // 0 = read, 1 = write
-    }
+
+    val drAddr = Input(UInt(32.W))
+    val dwAddr = Input(UInt(32.W))
+    val drData = Output(UInt(32.W))
+    val dwData = Input(UInt(32.W))
+    val dMode = Input(Bool()) // 0 = read, 1 = write
   })
 
   val mem = SyncReadMem(size, UInt(32.W))
@@ -63,5 +63,7 @@ class DMem(val size: Int = 4096, val offset: Int = 0, val debug: Boolean = false
     } .otherwise {
       io.drData := mem.read(io.drAddr)
     }
+  } else {
+    io.drData := DontCare
   }
 }
