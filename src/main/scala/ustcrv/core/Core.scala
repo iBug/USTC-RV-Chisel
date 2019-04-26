@@ -23,7 +23,7 @@ class Core extends Module {
   val inst = imem.out
 
   // Wires
-  val wb = Wire(UInt(32.U))
+  val wb = Wire(UInt(32.W))
 
   // CS61c slide p.48, left to right
   pc.sel := control.PCSel
