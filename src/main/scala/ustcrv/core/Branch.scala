@@ -13,7 +13,7 @@ object Branch {
   val GEU = 7.U
 }
 
-class BranchComp(val w: Int) extends Module {
+class BranchComp(val w: Int = 32) extends Module {
   val io = IO(new Bundle {
     val a = Input(UInt(w.W))
     val b = Input(UInt(w.W))
