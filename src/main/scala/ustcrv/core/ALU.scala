@@ -32,7 +32,7 @@ object ALU {
   }
 }
 
-class ALU(val w: Int) extends Module {
+class ALU(val w: Int = 32) extends Module {
   val io = IO(new Bundle {
     val a = Input(UInt(w.W))
     val b = Input(UInt(w.W))
