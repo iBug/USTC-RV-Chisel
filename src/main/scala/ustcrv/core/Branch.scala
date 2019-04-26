@@ -6,7 +6,7 @@ import chisel3.util._
 object Branch {
   val XX  = 0.U
   val EQ  = 4.U
-  val NE  = 1.U
+  val NE  = 5.U
   val LT  = 2.U
   val GE  = 3.U
   val LTU = 6.U
