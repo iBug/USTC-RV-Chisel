@@ -15,7 +15,7 @@ class RegisterFile(val wData: Int = 32, val wAddr: Int = 5) extends Module {
   })
 
   val regCount = 1 << wAddr // Number of registers
-  val r = VecInit(Seq.fill(regCount)(RegInit(0.U(wData.W))))
+  val r = RegInit(VecInit(Seq.fill(regCount)(0.U(wData.W))))
 
   io.dataA := r(io.addrA)
   io.dataB := r(io.addrB)
