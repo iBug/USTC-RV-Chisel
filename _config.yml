@@ -1,4 +1,4 @@
-theme: jekyll-theme-leap-day
+remote_theme: iBug/aurora-theme
 
 title: "Chisel RISC-V of USTC"
 description: ""
