@@ -1,6 +1,6 @@
 ---
 title: "Page title"
-description: "Page tagline"
+tagline: "Page tagline"
 ---
 
 Content here
