@@ -4,3 +4,6 @@ tagline: "RISC-V Toolchain"
 ---
 
 [C 工具链](./C.md)
+
+[Spike 模拟器](./Spike.md)
+
