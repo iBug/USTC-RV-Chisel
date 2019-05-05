@@ -1,5 +1,5 @@
 ---
-title: "RISC-V 官方 C 工具链相关笔记"
+title: "RISC-V C 工具链"
 tagline: "RISC-V C Toolchain"
 ---
 
