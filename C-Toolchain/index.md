@@ -1,6 +1,6 @@
 ---
 title: "RISC-V 官方 C 工具链相关笔记"
-description: "RISC-V C Toolchain"
+tagline: "RISC-V C Toolchain"
 ---
 
 RISC-V 官方的 C 工具链可以在 <https://github.com/freechipsproject/rocket-tools> 找到。在国内需要加速下载（clone submodule 很慢）的话可以使用 https://github.com/cnrv/clone-helpers/ 辅助。

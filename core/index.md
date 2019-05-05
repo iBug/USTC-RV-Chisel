@@ -1,6 +1,6 @@
 ---
 title: "核心设计"
-description: ""
+tagline: " "
 ---
 
 单周期 RISC-V CPU 的核心基本按照加州伯克利大学的 CS61C 课程第 11 讲幻灯片设计，如图：
