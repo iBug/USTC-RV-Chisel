@@ -11,7 +11,8 @@ class CoreIO extends Bundle {
   val dmemDR = Input(UInt(32.W))
   val dmemDW = Output(UInt(32.W))
   val dmemWE = Output(UInt(32.W))
-  val debug = Input(Bool())
+
+  val pcReset = Input(Bool()) // For easier debugging
 }
 
 class Core extends Module {
@@ -22,7 +23,9 @@ class Core extends Module {
   val regFile = Module(new RegisterFile(32, 5)).io
   val branchComp = Module(new BranchComp(32)).io
   val immGen = Module(new ImmGen).io
-  val pc = Module(new PC).io
+  val pc = withClockAndReset (clock, reset | io.pcReset) {
+    Module(new PC)
+  }.io
 
   val inst = io.imemOut
   control.inst := inst
