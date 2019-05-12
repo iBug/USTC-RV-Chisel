@@ -15,7 +15,7 @@ class IMem(val size: Int = 4096, val offset: Int = 0, val debug: Boolean = false
     val dMode = Input(Bool()) // 0 = read, 1 = write
   })
 
-  val mem = SyncReadMem(size, UInt(32.W))
+  val mem = Mem(size, UInt(32.W))
   val addr = (io.in - offset.U) >> 2.U
 
   io.out := mem.read(addr)
@@ -46,7 +46,7 @@ class DMem(val size: Int = 4096, val offset: Int = 0, val debug: Boolean = false
     val dMode = Input(Bool()) // 0 = read, 1 = write
   })
 
-  val mem = SyncReadMem(size, UInt(32.W))
+  val mem = Mem(size, UInt(32.W))
   val addr = (io.addr - offset.U) >> 2.U // access unit is 4 bytes
 
   when (io.memRW) {
