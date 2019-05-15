@@ -7,8 +7,7 @@ jobs:
       JEKYLL_ENV: development
       LC_ALL: C.UTF-8
     branches:
-      only:
-        - pages-source
+      only: pages-source
     steps:
       - checkout
       - restore_cache:
