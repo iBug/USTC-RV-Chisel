@@ -27,11 +27,7 @@ jobs:
       - run: bash .circleci/patch.sh
       - run: bash .circleci/deploy.sh
 
-workflows:
-  version: 2
-  build:
-    jobs:
-      - build:
-          branches:
-            only:
-              - pages-source
+general:
+  branches:
+    only:
+      - pages-source
