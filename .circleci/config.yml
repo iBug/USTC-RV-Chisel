@@ -6,8 +6,6 @@ jobs:
     environment:
       JEKYLL_ENV: development
       LC_ALL: C.UTF-8
-    branches:
-      only: pages-source
     steps:
       - checkout
       - restore_cache:
@@ -26,8 +24,3 @@ jobs:
       - run: bundle exec jekyll build
       - run: bash .circleci/patch.sh
       - run: bash .circleci/deploy.sh
-
-general:
-  branches:
-    only:
-      - pages-source
