@@ -1,3 +1,5 @@
+repository: iBug/USTC-RV-Chisel
+
 remote_theme: iBug/aurora-theme
 
 title: "Chisel RISC-V of USTC"
