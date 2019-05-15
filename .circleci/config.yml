@@ -5,6 +5,7 @@ jobs:
       - image: circleci/ruby:2.6.3-stretch
     environment:
       JEKYLL_ENV: production
+      PAGES_REPO_NWO: iBug/USTC-RV-Chisel
       LC_ALL: C.UTF-8
     steps:
       - checkout
