@@ -25,11 +25,11 @@
 
 <p>*在 learn-rv32i-asap 中，验证功能正确性的工具是 <code class="highlighter-rouge">riscv-fesvr</code>（RISC-V Frontend Server），但是对应链接 <a href="https://github.com/riscv/riscv-fesvr">https://github.com/riscv/riscv-fesvr</a> 表明这个工具已经融合进 Spike 中了。</p>
 
-<h2 id="使用-spike-验证设计正确性">使用 Spike 验证设计正确性</h2>
+<p>Spike 可以调试程序，并且有几个项目均使用 Spike/Fesvr，结合 Verilator 验证 CPU 设计的正确性（Debug Sepc）。但是对于自己定义的地址空间来讲的话（比如说，想从 <code class="highlighter-rouge">0x0</code> 开始执行程序），Spike 的限制比较大，并且文档不全，比如说没有明确提到 Spike 自带的 bootloader 是从 <code class="highlighter-rouge">0x1000</code> 开始的，并且起始的入口点是硬编码在程序中的。</p>
 
-<p>Spike 可以调试程序，并且有几个项目均使用 Spike/Fesvr，结合 Verilator 验证 CPU 设计的正确性。</p>
+<p>我调试了好几次都没有成功用 Spike 调试出来（一直遇到 <code class="highlighter-rouge">terminate called after throwing an instance of 'trap_store_access_fault'</code> 错误），可能和 https://github.com/riscv/riscv-isa-sim/issues/192 这个 issue 有关。</p>
 
-<p>// TODO</p>
+<p>如果需要调试我们自己的程序，特别是加入 I/O 之后，有可能还需要自己写 simulator。</p>
 
 
 			<footer class="site-footer">
