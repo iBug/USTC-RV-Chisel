@@ -4,7 +4,7 @@ title: "Chisel RISC-V of USTC"
 description: ""
 
 url: "https://risc-v.ibugone.com"
-baseurl: "/"
+baseurl: "."
 
 exclude: ["Gemfile", "Gemfile.lock", "node_modules", "vendor/", "README.md", "REMOTE_README.md"]
 keep_files: [".git", ".circleci", ".nojekyll", "README.md", "CNAME"]
