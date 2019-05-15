@@ -6,8 +6,7 @@ jobs:
     environment:
       JVM_OPTS: -Xmx2048m
     branches:
-      only:
-        - master
+      only: master
     steps:
       - checkout
       - restore_cache:
