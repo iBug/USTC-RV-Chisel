@@ -1,0 +1,7 @@
+version: 2
+jobs:
+  dummy:
+    steps:
+      - run:
+          name: Dummy
+          command: ":"
