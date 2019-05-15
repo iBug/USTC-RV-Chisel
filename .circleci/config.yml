@@ -1,6 +1,8 @@
 version: 2
 jobs:
-  dummy:
+  build:
+    docker:
+      - image: debian:stretch
     steps:
       - run:
           name: Dummy
