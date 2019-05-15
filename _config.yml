@@ -6,6 +6,9 @@ description: ""
 url: "https://risc-v.ibugone.com"
 baseurl: "/"
 
+exclude: ["Gemfile", "Gemfile.lock", "node_modules", "vendor/", "README.md", "REMOTE_README.md"]
+keep_files: [".git", ".circleci", ".nojekyll", "README.md", "CNAME"]
+
 show_downloads: false
 github: [metadata]
 google_analytics: "UA-115907213-2"
