@@ -22,6 +22,14 @@ e_info "Patching generated site"
 
 :> "$SRC/.nojekyll"
 echo -n "risc-v.ibugone.com" > "$SRC/CNAME"
-[ -r REMOTE_README.md ] && cat REMOTE_README.md > "$SRC/README.md"
+if [ -r "REMOTE_README.md" ]; then
+  cat "REMOTE_README.md" > "$SRC/README.md"
+elif [ -r "README.md" ]; then
+  cat "README.md" > "$SRC/README.md"
+  if [ -n "$CIRCLE_BUILD_NUM" -a -n "$CIRCLE_BUILD_URL" ]; then
+    echo >> "$SRC/README.md"
+    echo "Deployed from [CircleCI build $CIRCLE_BUILD_NUM]($CIRCLE_BUILD_URL)" >> "$SRC/README.md"
+  fi
+fi
 
 e_success "Patch complete"
