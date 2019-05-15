@@ -24,6 +24,6 @@ jobs:
             - vendor/bundle
             - ~/.bundle
       - run: bash .circleci/prepare.sh
-      - run: bundle exec jekyll build
+      - run: PAGES_REPO_NWO=iBug/USTC-RV-Chisel bundle exec jekyll build
       - run: bash .circleci/patch.sh
       - run: bash .circleci/deploy.sh
