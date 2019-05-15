@@ -5,8 +5,6 @@ jobs:
       - image: circleci/openjdk:8-jdk
     environment:
       JVM_OPTS: -Xmx2048m
-    branches:
-      only: master
     steps:
       - checkout
       - restore_cache:
@@ -41,8 +39,3 @@ jobs:
           path: verilog.tar.gz
       - store_artifacts:
           path: waveforms.tar.gz
-
-general:
-  branches:
-    only:
-      - master
