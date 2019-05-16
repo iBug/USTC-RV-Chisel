@@ -2,4 +2,4 @@
 
 Visit <https://risc-v.ibugone.com>
 
-Deployed from [CircleCI build 122](https://circleci.com/gh/iBug/USTC-RV-Chisel/122)
+Deployed from [CircleCI build 123](https://circleci.com/gh/iBug/USTC-RV-Chisel/123)
