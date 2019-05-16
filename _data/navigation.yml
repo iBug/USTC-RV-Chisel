@@ -1,0 +1,7 @@
+main:
+  - title: "Core"
+    url: /core
+  - title: "C Toolchain"
+    url: /toolchain
+  - title: "GitHub"
+    url: https://github.com/iBug/USTC-RV-Chisel
