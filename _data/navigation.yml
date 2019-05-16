@@ -1,7 +1,17 @@
-main:
+main: # Top nav bar
   - title: "Core"
     url: /core
   - title: "C Toolchain"
     url: /toolchain
   - title: "GitHub"
     url: https://github.com/iBug/USTC-RV-Chisel
+
+sidebar:
+  - title: RISC-V Design and Implementation
+    children:
+      - title: "Main Page"
+        url: /core
+  - title: C Toolchain
+    children:
+      - title: "Main Page"
+        url: /toolchain
