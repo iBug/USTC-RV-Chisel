@@ -18,7 +18,7 @@ minimal_mistakes_skin    : "air" # "air", "aqua", "contrast", "dark", "dirt", "n
 locale                   : "zh-CN"
 title                    : "USTC RISC-V Chisel"
 title_separator          : "-"
-name                     : "The Chisel RISC-V Team of USTC"
+name                     : "USTC Chisel RISC-V 项目小组"
 description              : "Project website"
 url                      : "https://risc-v.ibugone.com"
 baseurl                  : "/"
@@ -108,9 +108,9 @@ analytics:
 author:
   name             : null # Inapplicable
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "I am an amazing person."
-  location         : "Somewhere"
-  email            :
+  bio              : null # "I am an amazing person."
+  location         : null # "Somewhere"
+  email            : null # ehhh
   links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
@@ -158,6 +158,7 @@ footer:
 include:
   - .htaccess
   - _pages
+  - CNAME
 exclude:
   - "*.sublime-project"
   - "*.sublime-workspace"
@@ -297,7 +298,7 @@ defaults:
       layout: single
       type: posts
       toc: true
-      toc_label: "Table of Content"
+      toc_label: "目录"
       author_profile: false
       read_time: false
       comments: false
