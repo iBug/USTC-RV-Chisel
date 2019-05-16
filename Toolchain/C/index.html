@@ -1,0 +1,351 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.16.3 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="zh" class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <!-- begin _includes/seo.html --><title>RISC-V C 工具链 - USTC RISC-V Chisel</title>
+    <meta name="description" content="Project website">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="zh_CN">
+    <meta property="og:site_name" content="USTC RISC-V Chisel">
+    <meta property="og:title" content="RISC-V C 工具链">
+    <meta property="og:url" content="https://risc-v.ibugone.com/Toolchain/C/">
+    <link rel="canonical" href="https://risc-v.ibugone.com/Toolchain/C/">
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "The Chisel RISC-V Team of USTC",
+        "url": "https://risc-v.ibugone.com/",
+        "sameAs": null
+      }
+    </script>
+    <!-- end _includes/seo.html -->
+    <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="USTC RISC-V Chisel Feed">
+    <!-- https://t.co/dKP3o1e -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+      document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+    </script>
+    <!-- For all browsers -->
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <!--[if IE ]>
+      <style>
+        /* old IE unsupported flexbox fixes */
+        .greedy-nav .site-title {
+          padding-right: 3em;
+        }
+        .greedy-nav button {
+          position: absolute;
+          top: 0;
+          right: 0;
+          height: 100%;
+        }
+      </style>
+    <![endif]-->
+    <!-- start custom head snippets -->
+    <!-- insert favicons. use https://realfavicongenerator.net/ -->
+    <!-- end custom head snippets -->
+  </head>
+  <body class="layout--single">
+    <!--[if lt IE 9]>
+      <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+    <![endif]-->
+    <div class="masthead">
+      <div class="masthead__inner-wrap">
+        <div class="masthead__menu">
+          <nav id="site-nav" class="greedy-nav">
+            <a class="site-title" href="/">USTC RISC-V Chisel</a>
+            <ul class="visible-links">
+              <li class="masthead__menu-item">
+                <a href="/core" >Core</a>
+              </li>
+              <li class="masthead__menu-item">
+                <a href="/toolchain" >C Toolchain</a>
+              </li>
+              <li class="masthead__menu-item">
+                <a href="https://github.com/iBug/USTC-RV-Chisel" >GitHub</a>
+              </li>
+            </ul>
+            <button class="greedy-nav__toggle hidden" type="button">
+              <span class="visually-hidden">切换菜单</span>
+              <div class="navicon"></div>
+            </button>
+            <ul class="hidden-links hidden"></ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <div class="initial-content">
+      <div id="main" role="main">
+        <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+          <meta itemprop="headline" content="RISC-V C 工具链">
+          <div class="page__inner-wrap">
+            <header>
+              <h1 id="page-title" class="page__title" itemprop="headline">RISC-V C 工具链
+              </h1>
+            </header>
+            <section class="page__content" itemprop="text">
+              <aside class="sidebar__right ">
+                <nav class="toc">
+                  <header>
+                    <h4 class="nav__title"><i class="fas fa-file-alt"></i> Table of Content</h4>
+                  </header>
+                  <ul class="toc__menu">
+                    <li><a href="#程序的编译">程序的编译</a></li>
+                    <li><a href="#定制c-工具链以-darkriscv-为例">「定制」C 工具链：以 darkriscv 为例</a></li>
+                  </ul>
+                </nav>
+              </aside>
+              <p>RISC-V 官方的 C 工具链可以在 <a href="https://github.com/freechipsproject/rocket-tools">https://github.com/freechipsproject/rocket-tools</a> 找到。在国内需要加速下载（clone submodule 很慢）的话可以使用 https://github.com/cnrv/clone-helpers/ 辅助。</p>
+              <p>编译需要的时间比较长。注意：如果需要生成 RV32 的程序，使用脚本 <code class="highlighter-rouge">./build-rv32ima.sh</code>（而非 <code class="highlighter-rouge">./build.sh</code>）。下面都以 RV32I 指令集为例。</p>
+              <h2 id="程序的编译">程序的编译</h2>
+              <p>Hello world 程序通常被认为是最简单的样例程序。</p>
+              <div class="language-c highlighter-rouge">
+                <div class="highlight">
+                  <pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Hello, world!</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+                </div>
+              </div>
+              <p>默认情况下，编译器会做怎样的处理呢？进行编译。</p>
+              <div class="highlighter-rouge">
+                <div class="highlight">
+                  <pre class="highlight"><code>$RISCV/bin/riscv32-unknown-elf-gcc -march=rv32i helloworld.c
+</code></pre>
+                </div>
+              </div>
+              <p>反汇编。</p>
+              <div class="highlighter-rouge">
+                <div class="highlight">
+                  <pre class="highlight"><code>$RISCV/bin/riscv32-unknown-elf-objdump -d a.out
+</code></pre>
+                </div>
+              </div>
+              <p>观察生成的结果可以发现：</p>
+              <ul>
+                <li>默认情况下，编译器把整个 C 库（newlib）都塞到了编译的程序中（就算根本没有用到）</li>
+                <li>C 库带来了一些不属于 RV32I 指令集的指令（比如说 <code class="highlighter-rouge">div</code>）</li>
+                <li>并且对于我们的项目来说，它的 <code class="highlighter-rouge">printf()</code> 会把数据输出到哪里去呢？这里需要我们自己处理。</li>
+              </ul>
+              <p>如果需要模拟执行我们的程序，一种办法是使用 <code class="highlighter-rouge">spike</code>（<a href="https://github.com/riscv/riscv-isa-sim/">https://github.com/riscv/riscv-isa-sim/</a>）。</p>
+              <div class="highlighter-rouge">
+                <div class="highlight">
+                  <pre class="highlight"><code>$ $RISCV/bin/spike -m128 pk a.out
+Hello, world!
+</code></pre>
+                </div>
+              </div>
+              <p><code class="highlighter-rouge">-m128</code> 参数指定了占用的内存大小。<code class="highlighter-rouge">spike</code> 默认占用 2GB 的内存，如果内存大小不足，启动会出错。而 <code class="highlighter-rouge">pk</code> 是 <a href="https://github.com/riscv/riscv-pk/">https://github.com/riscv/riscv-pk/</a>，一个轻量级的，可运行静态链接的 RISCV ELF 应用程序的环境（Proxy Kernel）。</p>
+              <p>如果不想要链接 C 库，需要参数 <code class="highlighter-rouge">-nostdlib</code>。</p>
+              <p>现在，我们以下面这个程序作为示例。</p>
+              <div class="highlighter-rouge">
+                <div class="highlight">
+                  <pre class="highlight"><code>int global_init_var = 23;
+int global_array[32];
+
+int func1(int i)
+{
+        return i + global_array[i] + global_init_var;
+}
+
+int main(void)
+{
+        static int static_var = 24;
+
+        int a = 1;
+
+        int array[64];
+
+        array[32] = func1(static_var + global_array[0] + a);
+
+        return a;
+}
+</code></pre>
+                </div>
+              </div>
+              <p>编译时由于没有了 C 库，会出现没有入口点的警告。我们将 <code class="highlighter-rouge">main()</code> 改名为 <code class="highlighter-rouge">_start()</code>。观察生成的可执行文件。</p>
+              <div class="highlighter-rouge">
+                <div class="highlight">
+                  <pre class="highlight"><code>00010074 &lt;func1&gt;:
+   10074:       fe010113                addi    sp,sp,-32
+   10078:       00812e23                sw      s0,28(sp)
+   1007c:       02010413                addi    s0,sp,32
+   10080:       fea42623                sw      a0,-20(s0)
+   10084:       000117b7                lui     a5,0x11
+   10088:       fec42703                lw      a4,-20(s0)
+   1008c:       00271713                slli    a4,a4,0x2
+   10090:       12478793                addi    a5,a5,292 # 11124 &lt;_edata&gt;
+   10094:       00f707b3                add     a5,a4,a5
+   10098:       0007a703                lw      a4,0(a5)
+   1009c:       fec42783                lw      a5,-20(s0)
+   100a0:       00f70733                add     a4,a4,a5
+   100a4:       000117b7                lui     a5,0x11
+   100a8:       11c7a783                lw      a5,284(a5) # 1111c &lt;global_init_var&gt;
+   100ac:       00f707b3                add     a5,a4,a5
+   100b0:       00078513                mv      a0,a5
+   100b4:       01c12403                lw      s0,28(sp)
+   100b8:       02010113                addi    sp,sp,32
+   100bc:       00008067                ret
+
+000100c0 &lt;_start&gt;:
+   100c0:       ee010113                addi    sp,sp,-288
+   100c4:       10112e23                sw      ra,284(sp)
+   100c8:       10812c23                sw      s0,280(sp)
+   100cc:       12010413                addi    s0,sp,288
+   100d0:       00100793                li      a5,1
+   100d4:       fef42623                sw      a5,-20(s0)
+   100d8:       000117b7                lui     a5,0x11
+   100dc:       1247a703                lw      a4,292(a5) # 11124 &lt;_edata&gt;
+   100e0:       000117b7                lui     a5,0x11
+   100e4:       1207a783                lw      a5,288(a5) # 11120 &lt;static_var.1382&gt;
+   100e8:       00f70733                add     a4,a4,a5
+   100ec:       fec42783                lw      a5,-20(s0)
+   100f0:       00f707b3                add     a5,a4,a5
+   100f4:       00078513                mv      a0,a5
+   100f8:       f7dff0ef                jal     ra,10074 &lt;func1&gt;
+   100fc:       00050793                mv      a5,a0
+   10100:       f6f42623                sw      a5,-148(s0)
+   10104:       fec42783                lw      a5,-20(s0)
+   10108:       00078513                mv      a0,a5
+   1010c:       11c12083                lw      ra,284(sp)
+   10110:       11812403                lw      s0,280(sp)
+   10114:       12010113                addi    sp,sp,288
+   10118:       00008067                ret
+</code></pre>
+                </div>
+              </div>
+              <p>可以看到：</p>
+              <ul>
+                <li><code class="highlighter-rouge">sp</code> 被用作栈指针——我们可能需要初始化栈指针到合适的内存位置。</li>
+                <li>尽管程序中有全局变量，<code class="highlighter-rouge">gp</code> 寄存器没有被使用。</li>
+                <li>没有使用 <code class="highlighter-rouge">fp</code> (frame pointer)，由于寄存器很多，使用 frame pointer 确实没有太大的必要。</li>
+                <li>没有 <code class="highlighter-rouge">fence</code> 与控制寄存器相关部分。</li>
+              </ul>
+              <h2 id="定制c-工具链以-darkriscv-为例">「定制」C 工具链：以 darkriscv 为例</h2>
+              <p>在我们最终的架构中，需要将指令和数据放在不同的地方（哈佛架构），需要自己定义一套地址空间。可以使用链接脚本解决这个问题。</p>
+              <p>参考 darkriscv 的链接脚本：</p>
+              <div class="highlighter-rouge">
+                <div class="highlight">
+                  <pre class="highlight"><code>MEMORY
+{
+    ROM (x!rw) : ORIGIN = 0x00000000, LENGTH = 0x1000
+    RAM (rw!x) : ORIGIN = 0x00001000, LENGTH = 0x1000
+    IO  (rw!x) : ORIGIN = 0x80000000, LENGTH = 0x10
+}
+
+SECTIONS
+{
+    .text :
+    {
+        boot.o(.text)
+        *(.text)
+
+    } &gt; ROM
+
+    .data :
+    {
+        *(.data)
+        *(.bss)
+        *(.rela*)
+        *(.rodata*)
+
+    } &gt; RAM
+
+    .io :
+    {
+        io.o(COMMON)
+
+    } &gt; IO
+}
+</code></pre>
+                </div>
+              </div>
+              <blockquote>
+                <p>In both cases, a proper designed linker script (darksocv.ld) probably solves the problem!</p>
+                <p>The current memory map in the linker script is the follow:</p>
+                <ul>
+                  <li>0x00000000: 4KB ROM</li>
+                  <li>0x00001000: 4KB RAM</li>
+                </ul>
+                <p>Also, the linker maps the IO in the following positions:</p>
+                <ul>
+                  <li>0x80000000: UART status</li>
+                  <li>0x80000004: UART xmit/recv buffer</li>
+                  <li>0x80000008: LED buffer</li>
+                </ul>
+                <p>The RAM memory contains the .data area, the .bss area (after the .data and initialized with zero), the .rodada and the stack area at the end of RAM.</p>
+              </blockquote>
+              <p>可以看到，程序的 <code class="highlighter-rouge">.text</code> 段接在 <code class="highlighter-rouge">boot.o</code>（用作初始化环境）后面放在了 ROM 区域，<code class="highlighter-rouge">.data</code>, <code class="highlighter-rouge">.bss</code> 等段则放在 RAM 区域，IO 则由 <code class="highlighter-rouge">io.o</code> 处理。此外由于不使用默认的 newlib C 库，darkriscv 自己实现了一些 C 函数，在 <code class="highlighter-rouge">stdio.c</code> 中。下面是通过调用定义的 IO 实现字符输入/输出的「标准库」代码。</p>
+              <div class="language-c highlighter-rouge">
+                <div class="highlight">
+                  <pre class="highlight"><code><span class="c1">// putchar and getchar uses the "low-level" io
+</span>
+<span class="kt">int</span> <span class="nf">getchar</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">while</span><span class="p">((</span><span class="n">io</span><span class="p">.</span><span class="n">uart</span><span class="p">.</span><span class="n">stat</span><span class="o">&amp;</span><span class="mi">2</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span> <span class="c1">// uart empty, wait...
+</span>  
+  <span class="k">return</span> <span class="n">io</span><span class="p">.</span><span class="n">uart</span><span class="p">.</span><span class="n">fifo</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">putchar</span><span class="p">(</span><span class="kt">int</span> <span class="n">c</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">c</span><span class="o">==</span><span class="sc">'\n'</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">io</span><span class="p">.</span><span class="n">uart</span><span class="p">.</span><span class="n">stat</span><span class="o">&amp;</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// uart busy, wait...
+</span>    <span class="n">io</span><span class="p">.</span><span class="n">uart</span><span class="p">.</span><span class="n">fifo</span> <span class="o">=</span> <span class="sc">'\r'</span><span class="p">;</span>  
+  <span class="p">}</span>
+  
+  <span class="k">while</span><span class="p">(</span><span class="n">io</span><span class="p">.</span><span class="n">uart</span><span class="p">.</span><span class="n">stat</span><span class="o">&amp;</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// uart busy, wait...
+</span>  <span class="k">return</span> <span class="n">io</span><span class="p">.</span><span class="n">uart</span><span class="p">.</span><span class="n">fifo</span> <span class="o">=</span> <span class="n">c</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+                </div>
+              </div>
+              <p>最终，通过一个 Makefile 调用 <code class="highlighter-rouge">objcopy</code> 等程序，可以生成对应 ROM 和 RAM 文件，这些文件可以进一步转换为方便使用的格式，如 COE 等。</p>
+            </section>
+            <footer class="page__meta">
+            </footer>
+          </div>
+        </article>
+      </div>
+    </div>
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+        <!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+          <ul class="social-icons">
+            <li><strong>关注:</strong></li>
+            <li><a href="https://github.com/iBug/USTC-RV-Chisel" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+            <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+          </ul>
+        </div>
+        <div class="page__footer-copyright">&copy; 2019 The Chisel RISC-V Team of USTC. 技术来自于 <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+      </footer>
+    </div>
+    <script src="/assets/js/main.min.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.8.1/js/all.js" integrity="sha384-g5uSoOSBd7KkhAMlnQILrecXvzst9TdC09/VM+pjDTCM+1il8RHz5fKANTFFb+gQ" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-115907213-2']);
+      
+      _gaq.push(['_trackPageview']);
+      
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>
