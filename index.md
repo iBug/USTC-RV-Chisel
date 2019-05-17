@@ -7,7 +7,7 @@ tagline: " "
 
 C 语言工具链：
 
-- [主页](/Toolchain)
+- [主页](/toolchain)
 
 核心设计：
 
