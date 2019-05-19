@@ -20,14 +20,13 @@ class DebugIO extends Bundle {
   val pcReset = Output(Bool())
   val pcValue = Input(UInt(32.W))
 
-  val memSelect = Output(Bool()) // False = CPU, True = this module
   // IMem
   val idMode = Output(Bool())
   val idrAddr = Output(UInt(32.W))
   val idwAddr = Output(UInt(32.W))
   val idrData = Input(UInt(32.W))
   val idwData = Output(UInt(32.W))
-  // DMem - Going different: DMem has dedicated IO for debug
+  // DMem
   val daddr = Output(UInt(32.W))
   val ddataR = Input(UInt(32.W))
   val ddataW = Output(UInt(32.W))

@@ -12,7 +12,9 @@ class CoreIO extends Bundle {
   val dmemDW = Output(UInt(32.W))
   val dmemWE = Output(UInt(32.W))
 
-  val pcReset = Input(Bool()) // For easier debugging
+  // Ports for debugging
+  val pcReset = Input(Bool())
+  val pcValue = Output(UInt(32.W))
 }
 
 class Core extends Module {
@@ -39,6 +41,7 @@ class Core extends Module {
   pc.en := io.enable
 
   io.imemIn := pc.out
+  io.pcValue := pc.out
 
   regFile.addrA := inst(19, 15)
   regFile.addrB := inst(24, 20)

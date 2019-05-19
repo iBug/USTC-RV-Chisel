@@ -8,6 +8,7 @@ class IMem(val size: Int = 4096, val offset: Int = 0, val debug: Boolean = false
     val in = Input(UInt(32.W))
     val out = Output(UInt(32.W))
 
+    // Debug ports
     val drAddr = Input(UInt(32.W))
     val dwAddr = Input(UInt(32.W))
     val drData = Output(UInt(32.W))
@@ -34,15 +35,14 @@ class IMem(val size: Int = 4096, val offset: Int = 0, val debug: Boolean = false
 
 class DMem(val size: Int = 4096, val offset: Int = 0, val debug: Boolean = false) extends Module {
   val io = IO(new Bundle {
-    // IO for debug module
+    // IO for CPU Core
     val addr = Input(UInt(32.W))
     val dataR = Output(UInt(32.W))
     val dataW = Input(UInt(32.W))
     val memRW = Input(Bool())
 
-    // IO for CPU Core
-    val drAddr = Input(UInt(32.W))
-    val dwAddr = Input(UInt(32.W))
+    // IO for debug module
+    val dAddr = Input(UInt(32.W))
     val drData = Output(UInt(32.W))
     val dwData = Input(UInt(32.W))
     val dMode = Input(Bool()) // 0 = read, 1 = write
@@ -60,10 +60,10 @@ class DMem(val size: Int = 4096, val offset: Int = 0, val debug: Boolean = false
 
   if (debug) {
     when (io.dMode) {
-      mem.write(io.dwAddr >> 2.U, io.dwData)
+      mem.write(io.dAddr, io.dwData)
       io.drData := DontCare
     } .otherwise {
-      io.drData := mem.read(io.drAddr)
+      io.drData := mem.read(io.dAddr)
     }
   } else {
     io.drData := DontCare
