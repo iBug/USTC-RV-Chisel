@@ -34,11 +34,13 @@ class IMem(val size: Int = 4096, val offset: Int = 0, val debug: Boolean = false
 
 class DMem(val size: Int = 4096, val offset: Int = 0, val debug: Boolean = false) extends Module {
   val io = IO(new Bundle {
+    // IO for debug module
     val addr = Input(UInt(32.W))
     val dataR = Output(UInt(32.W))
     val dataW = Input(UInt(32.W))
     val memRW = Input(Bool())
 
+    // IO for CPU Core
     val drAddr = Input(UInt(32.W))
     val dwAddr = Input(UInt(32.W))
     val drData = Output(UInt(32.W))
