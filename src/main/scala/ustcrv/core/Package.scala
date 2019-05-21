@@ -30,6 +30,7 @@ class Package extends Module {
   // Core and debugger
   core.enable := debugger.pcEnable
   core.pcReset := debugger.pcReset
+  core.pcStep := debugger.pcStep
   debugger.pcValue := core.pcValue
 
   // Mem for debugger
@@ -39,6 +40,7 @@ class Package extends Module {
   debugger.idrData := imem.drData
   imem.dwData := debugger.idwData
 
+  dmem.enable := true.B
   dmem.dAddr := debugger.daddr
   debugger.ddataR := dmem.drData
   dmem.dwData := debugger.ddataW

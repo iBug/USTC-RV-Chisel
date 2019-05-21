@@ -14,6 +14,7 @@ class CoreIO extends Bundle {
 
   // Ports for debugging
   val pcReset = Input(Bool())
+  val pcStep = Input(Bool())
   val pcValue = Output(UInt(32.W))
 }
 
@@ -29,16 +30,18 @@ class Core extends Module {
     Module(new PC)
   }.io
 
+  val step = io.pcStep && RegNext(io.pcStep)
+
   val inst = io.imemOut
   control.inst := inst
 
   // Wires
   val wb = Wire(UInt(32.W))
 
-  // CS61c slide p.48, left to right
+  // CS61c slide p.48, left to right, with mods
   pc.sel := control.PCSel
   pc.in := alu.out
-  pc.en := io.enable
+  pc.en := io.enable | step
 
   io.imemIn := pc.out
   io.pcValue := pc.out

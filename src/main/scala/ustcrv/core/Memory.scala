@@ -3,7 +3,7 @@ package ustcrv.core
 import chisel3._
 import chisel3.util._
 
-class IMem(val size: Int = 4096, val offset: Int = 0, val debug: Boolean = false) extends Module {
+class IMem(val size: Int = 1024, val offset: Int = 0, val debug: Boolean = false) extends Module {
   val io = IO(new Bundle {
     val in = Input(UInt(32.W))
     val out = Output(UInt(32.W))
@@ -33,15 +33,17 @@ class IMem(val size: Int = 4096, val offset: Int = 0, val debug: Boolean = false
   }
 }
 
-class DMem(val size: Int = 4096, val offset: Int = 0, val debug: Boolean = false) extends Module {
+class DMem(val size: Int = 1024, val offset: Int = 0, val debug: Boolean = false) extends Module {
   val io = IO(new Bundle {
     // IO for CPU Core
+    val enable = Input(Bool())
     val addr = Input(UInt(32.W))
     val dataR = Output(UInt(32.W))
     val dataW = Input(UInt(32.W))
     val memRW = Input(Bool())
 
     // IO for debug module
+    val dEnable = Input(Bool())
     val dAddr = Input(UInt(32.W))
     val drData = Output(UInt(32.W))
     val dwData = Input(UInt(32.W))
@@ -51,19 +53,23 @@ class DMem(val size: Int = 4096, val offset: Int = 0, val debug: Boolean = false
   val mem = Mem(size, UInt(32.W))
   val addr = (io.addr - offset.U) >> 2.U // access unit is 4 bytes
 
-  when (io.memRW) {
-    mem.write(addr, io.dataW)
-    io.dataR := DontCare
-  } .otherwise {
-    io.dataR := mem.read(addr)
+  when (io.enable) {
+    when (io.memRW) {
+      mem.write(addr, io.dataW)
+      io.dataR := DontCare
+    } .otherwise {
+      io.dataR := mem.read(addr)
+    }
   }
 
   if (debug) {
-    when (io.dMode) {
-      mem.write(io.dAddr, io.dwData)
-      io.drData := DontCare
-    } .otherwise {
-      io.drData := mem.read(io.dAddr)
+    when (io.dEnable) {
+      when (io.dMode) {
+        mem.write(io.dAddr, io.dwData)
+        io.drData := DontCare
+      } .otherwise {
+        io.drData := mem.read(io.dAddr)
+      }
     }
   } else {
     io.drData := DontCare
