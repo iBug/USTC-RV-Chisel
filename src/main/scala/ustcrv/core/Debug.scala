@@ -8,6 +8,7 @@ object Debug {
   val STEP = 1.U
   val STOP = 2.U
   val START = 3.U
+  val RESET = 7.U
   val IMEMRA = 8.U
   val IMEMWA = 9.U
   val IMEMRD = 10.U
@@ -73,6 +74,8 @@ class Debugger extends Module {
   io.ddataW := dataIn
   io.dmemRW := ddMode
 
+  io.pcStep := false.B
+  io.pcReset := false.B
   when (update) {
     when (op === Debug.NOP) {
       // Do nothing
@@ -83,6 +86,8 @@ class Debugger extends Module {
       cpuEnable := true.B
     } .elsewhen (op === Debug.STOP) {
       cpuEnable := false.B
+    } .elsewhen (op === Debug.STOP) {
+      io.pcReset := true.B
     } .elsewhen (op === Debug.IMEMRA) {
       imemRA := dataIn
     } .elsewhen (op === Debug.IMEMWA) {
@@ -103,7 +108,6 @@ class Debugger extends Module {
       ddMode := true.B
     }
   } .elsewhen (!enable) {
-    io.pcStep := false.B
     idMode := false.B
     ddMode := false.B
   }

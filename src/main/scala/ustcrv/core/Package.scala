@@ -40,7 +40,7 @@ class Package extends Module {
   debugger.idrData := imem.drData
   imem.dwData := debugger.idwData
 
-  dmem.enable := true.B
+  dmem.dEnable := debugger.denable
   dmem.dAddr := debugger.daddr
   debugger.ddataR := dmem.drData
   dmem.dwData := debugger.ddataW
@@ -49,6 +49,7 @@ class Package extends Module {
   // Core and Memory
   imem.in := core.imemIn
   core.imemOut := imem.out
+  dmem.enable := true.B
   dmem.addr := core.dmemA
   core.dmemDR := dmem.dataR
   dmem.dataW := core.dmemDW

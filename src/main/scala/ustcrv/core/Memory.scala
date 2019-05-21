@@ -52,23 +52,25 @@ class DMem(val size: Int = 1024, val offset: Int = 0, val debug: Boolean = false
 
   val mem = Mem(size, UInt(32.W))
   val addr = (io.addr - offset.U) >> 2.U // access unit is 4 bytes
+  val data = RegInit(0.U(32.W))
+  io.dataR := data
 
   when (io.enable) {
     when (io.memRW) {
       mem.write(addr, io.dataW)
-      io.dataR := DontCare
     } .otherwise {
-      io.dataR := mem.read(addr)
+      data := mem.read(addr)
     }
   }
 
   if (debug) {
+    val ddata = RegInit(0.U(32.W))
+    io.drData := ddata
     when (io.dEnable) {
       when (io.dMode) {
         mem.write(io.dAddr, io.dwData)
-        io.drData := DontCare
       } .otherwise {
-        io.drData := mem.read(io.dAddr)
+        ddata := mem.read(io.dAddr)
       }
     }
   } else {
