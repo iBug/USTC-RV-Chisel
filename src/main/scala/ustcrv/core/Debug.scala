@@ -29,6 +29,7 @@ class DebugIO extends Bundle {
   // PC
   val pcEnable = Output(Bool())
   val pcReset = Output(Bool())
+  val pcStep = Output(Bool())
   val pcValue = Input(UInt(32.W))
   // IMem
   val idMode = Output(Bool())
@@ -46,5 +47,64 @@ class DebugIO extends Bundle {
 
 class Debugger extends Module {
   val io = IO(new DebugIO)
-  val update = io.enable && !RegNext(io.enable)
+  val enable = io.enable
+  val update = enable && !RegNext(enable)
+  val op = io.control
+  val dataIn = io.dataIn
+  val dataOut = RegInit(0.U(32.W))
+
+  val cpuEnable = RegInit(false.B)
+  val imemRA = RegInit(0.U(32.W))
+  val imemWA = RegInit(0.U(32.W))
+  val idMode = RegInit(false.B)
+  val dmemA = RegInit(0.U(32.W))
+  val ddMode = RegInit(false.B)
+
+  io.pcEnable := cpuEnable
+  io.dataOut := dataOut
+
+  io.idMode := idMode
+  io.idrAddr := imemRA
+  io.idwAddr := imemWA
+  io.idwData := dataIn
+
+  io.denable := true.B // looks like this can't be avoided
+  io.daddr := dmemA
+  io.ddataW := dataIn
+  io.dmemRW := ddMode
+
+  when (update) {
+    when (op === Debug.NOP) {
+      // Do nothing
+    } .elsewhen (op === Debug.STEP) {
+      cpuEnable := false.B
+      io.pcStep := true.B
+    } .elsewhen (op === Debug.START) {
+      cpuEnable := true.B
+    } .elsewhen (op === Debug.STOP) {
+      cpuEnable := false.B
+    } .elsewhen (op === Debug.IMEMRA) {
+      imemRA := dataIn
+    } .elsewhen (op === Debug.IMEMWA) {
+      imemWA := dataIn
+    } .elsewhen (op === Debug.IMEMRD) {
+      dataOut := io.idrData
+    } .elsewhen (op === Debug.IMEMWD) {
+      // Write data is sent via combinational circuit
+      idMode := true.B
+    } .elsewhen (op === Debug.DMEMRA) {
+      dmemA := dataIn
+    } .elsewhen (op === Debug.DMEMWA) {
+      dmemA := dataIn
+    } .elsewhen (op === Debug.DMEMRD) {
+      dataOut := io.ddataR
+    } .elsewhen (op === Debug.DMEMWD) {
+      // Write data is sent via combinational circuit
+      ddMode := true.B
+    }
+  } .elsewhen (!enable) {
+    io.pcStep := false.B
+    idMode := false.B
+    ddMode := false.B
+  }
 }
