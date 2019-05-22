@@ -1,5 +1,7 @@
 package ustcrv
 
-object Main {
-  def main(args: Array[String]): Unit = println("USTC-RV-Chisel:test")
+import java.nio.file.Paths
+
+object Main extends App {
+  println("USTC-RV-Chisel:test at " + Paths.get(".").toAbsolutePath)
 }
