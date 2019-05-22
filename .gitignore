@@ -24,3 +24,6 @@ test_run_dir
 
 ### IDEA ###
 .idea
+
+### VSCode ###
+.vscode

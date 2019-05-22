@@ -7,9 +7,9 @@ unsigned int __mulsi3 (unsigned int x, unsigned int y) {
 		if (x & 1) {  // if x is odd
 			ans += y;
 		}
-		x >>= 1; // x *= 2
-		y <<= 1; // y /= 2
-		if (y == 0)
+		x >>= 1; // x /= 2
+		y <<= 1; // y *= 2
+		if (x == 0)
 			break;
 	}
 
