@@ -10,7 +10,7 @@ SECTIONS
 {
 	.text :
 	{
-		init.o(.text)
+		KEEP(init.o(.text))
 		*(.text)
 	} > IMEM
 

@@ -7,9 +7,9 @@ LD = $(CCPATH)/$(CROSS)-ld
 OC = $(CCPATH)/$(CROSS)-objcopy
 OD = $(CCPATH)/$(CROSS)-objdump
 
-CCFLAGS = -Wall -Og -I./include -fomit-frame-pointer -march=rv32i
+CCFLAGS = -Wall -Og -I./include -fomit-frame-pointer -march=rv32i -ffunction-sections -static
 ASFLAGS = -march=rv32i
-LDFLAGS = -T $(PROJ).ld -Map=$(PROJ).map
+LDFLAGS = -T $(PROJ).ld -Map=$(PROJ).map --gc-sections -print-gc-sections
 OCFLAGS = -O binary
 ODFLAGS = -d
 
@@ -31,7 +31,7 @@ clean:
 	$(CC) $(CCFLAGS) -S $< -o $@
 
 $(PROJ).o: $(ASMS) $(OBJS)
-	$(LD) $(LDFLAGS) $(OBJS) -o $@
+	$(LD) $(OBJS) -o $@ $(LDFLAGS)
 
 $(PROJ).bin: $(PROJ).o
 	$(OC) $(OCFLAGS) $< $@
