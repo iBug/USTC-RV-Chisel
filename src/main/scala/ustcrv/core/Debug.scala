@@ -8,6 +8,7 @@ object Debug {
   val STEP = 1.U
   val STOP = 2.U
   val START = 3.U
+  val READPC = 4.U
   val RESET = 7.U
   val IMEMRA = 8.U
   val IMEMWA = 9.U
@@ -17,6 +18,11 @@ object Debug {
   val DMEMWA = 13.U
   val DMEMRD = 14.U
   val DMEMWD = 15.U
+}
+
+object DebugOutput {
+  val I = 0.U
+  val PC = 1.U
 }
 
 class DebugIO extends Bundle {
@@ -53,6 +59,7 @@ class Debugger extends Module {
   val op = io.control
   val dataIn = io.dataIn
   val dataOut = RegInit(0.U(32.W))
+  val dataMode = RegInit(0.U(4.W))
 
   val cpuEnable = RegInit(false.B)
   val imemRA = RegInit(0.U(32.W))
@@ -62,7 +69,10 @@ class Debugger extends Module {
   val ddMode = RegInit(false.B)
 
   io.pcEnable := cpuEnable
-  io.dataOut := dataOut
+  io.dataOut := MuxLookup(dataMode, 0.U, Array(
+    DebugOutput.I -> dataOut,
+    DebugOutput.PC -> io.pcValue
+  ))
 
   io.idMode := idMode
   io.idrAddr := imemRA
@@ -86,7 +96,9 @@ class Debugger extends Module {
       cpuEnable := true.B
     } .elsewhen (op === Debug.STOP) {
       cpuEnable := false.B
-    } .elsewhen (op === Debug.STOP) {
+    } .elsewhen (op === Debug.READPC) {
+      dataMode := DebugOutput.PC
+    } .elsewhen (op === Debug.RESET) {
       io.pcReset := true.B
     } .elsewhen (op === Debug.IMEMRA) {
       imemRA := dataIn
@@ -94,6 +106,7 @@ class Debugger extends Module {
       imemWA := dataIn
     } .elsewhen (op === Debug.IMEMRD) {
       dataOut := io.idrData
+      dataMode := DebugOutput.I
       imemRA := imemRA + 4.U
     } .elsewhen (op === Debug.IMEMWD) {
       // Write data is sent via combinational circuit
@@ -104,6 +117,7 @@ class Debugger extends Module {
       dmemA := dataIn
     } .elsewhen (op === Debug.DMEMRD) {
       dataOut := io.ddataR
+      dataMode := DebugOutput.I
       dmemA := dmemA + 4.U
     } .elsewhen (op === Debug.DMEMWD) {
       // Write data is sent via combinational circuit

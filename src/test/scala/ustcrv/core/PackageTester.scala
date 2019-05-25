@@ -5,6 +5,7 @@ import chisel3.util._
 import chisel3.iotesters._
 
 import scala.io.Source
+import scala.util.control.Breaks._
 import org.scalatest.{Matchers, FlatSpec}
 
 class PackageSpec extends FlatSpec with Matchers {
@@ -70,5 +71,38 @@ class PackageTester(val c: Package) extends PeekPokeTester(c) {
   for (data <- dData) {
     debugStep
     expect(c.io.dDataOut, data)
+  }
+
+  // Run the CPU
+  poke(c.io.dControl, Debug.READPC)
+  debugStep
+  poke(c.io.dControl, Debug.START)
+  debugStep
+  for (i <- 0 until 120) {
+    step(1)
+    expect(c.io.dDataOut, 1L)
+  }
+  poke(c.io.dControl, Debug.STOP)
+  debugStep
+  println("\n")
+
+  // Check DMem stuff
+  poke(c.io.dControl, Debug.DMEMRA)
+  poke(c.io.dDataIn, 0x1000)
+  debugStep
+  poke(c.io.dControl, Debug.DMEMRD)
+  for (i <- 0 until 20) {
+    debugStep
+    expect(c.io.dDataOut, i * i)
+  }
+
+  // Check stack
+  poke(c.io.dControl, Debug.DMEMRA)
+  poke(c.io.dDataIn, 0x1FE0)
+  debugStep
+  poke(c.io.dControl, Debug.DMEMRD)
+  for (i <- 0 until 8) {
+    debugStep
+    expect(c.io.dDataOut, 1)
   }
 }

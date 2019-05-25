@@ -69,8 +69,8 @@ class Core extends Module {
   io.dmemWE := control.MemRW
 
   wb := MuxLookup(control.WBSel, 0.U(32.W), Array(
-    0.U -> (pc.out + 4.U),
+    0.U -> io.dmemDR,
     1.U -> alu.out,
-    2.U -> io.dmemDR
+    2.U -> (pc.out + 4.U)
   ))
 }

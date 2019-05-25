@@ -62,7 +62,9 @@ class DMem(val size: Int = 1024, val offset: Int = 0, val debug: Boolean = false
     when (io.memRW) {
       mem.write(addr, io.dataW)
     } .otherwise {
-      data := mem.read(addr)
+      val value = mem.read(addr)
+      data := value
+      io.dataR := value
     }
   }
 
