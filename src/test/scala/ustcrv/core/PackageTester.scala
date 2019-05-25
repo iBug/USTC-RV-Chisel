@@ -78,9 +78,8 @@ class PackageTester(val c: Package) extends PeekPokeTester(c) {
   debugStep
   poke(c.io.dControl, Debug.START)
   debugStep
-  for (i <- 0 until 120) {
+  for (i <- 0 until 2000 - 2) {
     step(1)
-    expect(c.io.dDataOut, 1L)
   }
   poke(c.io.dControl, Debug.STOP)
   debugStep
@@ -98,11 +97,9 @@ class PackageTester(val c: Package) extends PeekPokeTester(c) {
 
   // Check stack
   poke(c.io.dControl, Debug.DMEMRA)
-  poke(c.io.dDataIn, 0x1FE0)
+  poke(c.io.dDataIn, 0x1FFC)
   debugStep
   poke(c.io.dControl, Debug.DMEMRD)
-  for (i <- 0 until 8) {
-    debugStep
-    expect(c.io.dDataOut, 1)
-  }
+  debugStep
+  expect(c.io.dDataOut, 0x0C)
 }
