@@ -99,6 +99,7 @@ class PackageTester(val c: Package) extends PeekPokeTester(c) {
   poke(c.io.dControl, Debug.DMEMRD)
   for (i <- 0 until 20) {
     debugStep
+    //System.out.printf(f"${peek(c.io.dDataOut)}%d\n")
     expect(c.io.dDataOut, i * i)
   }
 
