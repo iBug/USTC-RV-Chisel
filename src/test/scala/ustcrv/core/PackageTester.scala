@@ -51,4 +51,24 @@ class PackageTester(val c: Package) extends PeekPokeTester(c) {
     debugStep
     expect(c.io.dDataOut, data)
   }
+
+  // Write to DMem
+  poke(c.io.dControl, Debug.DMEMWA)
+  poke(c.io.dDataIn, 4096)
+  debugStep
+  poke(c.io.dControl, Debug.DMEMWD)
+  for (data <- dData) {
+    poke(c.io.dDataIn, data)
+    debugStep
+  }
+
+  // Read from DMem
+  poke(c.io.dControl, Debug.DMEMRA)
+  poke(c.io.dDataIn, 4096)
+  debugStep
+  poke(c.io.dControl, Debug.DMEMRD)
+  for (data <- dData) {
+    debugStep
+    expect(c.io.dDataOut, data)
+  }
 }

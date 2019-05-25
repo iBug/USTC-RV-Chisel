@@ -18,7 +18,7 @@ class Package extends Module {
 
   val core = Module(new Core).io
   val imem = Module(new IMem(256, 0, true)).io
-  val dmem = Module(new DMem(256, 0, true)).io
+  val dmem = Module(new DMem(256, 4096, true)).io
   val debugger = Module(new Debugger).io
 
   // Debugger first
