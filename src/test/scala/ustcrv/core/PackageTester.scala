@@ -18,6 +18,13 @@ class PackageSpec extends FlatSpec with Matchers {
   }
 }
 
+object PackageTests extends App {
+  val a = Array("--display-base", "16")
+  chisel3.iotesters.Driver.execute(a, () => new Package) {
+    c => new PackageTester(c)
+  }
+}
+
 class PackageTester(val c: Package) extends PeekPokeTester(c) {
   // Data Location: (pwd)/src/test/data
 
@@ -83,7 +90,7 @@ class PackageTester(val c: Package) extends PeekPokeTester(c) {
   }
   poke(c.io.dControl, Debug.STOP)
   debugStep
-  println("\n")
+  println("")
 
   // Check DMem stuff
   poke(c.io.dControl, Debug.DMEMRA)
