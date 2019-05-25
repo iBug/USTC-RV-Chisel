@@ -7,9 +7,6 @@ import chisel3.iotesters._
 import scala.io.Source
 import org.scalatest.{Matchers, FlatSpec}
 
-object PackageTests extends App {
-}
-
 class PackageSpec extends FlatSpec with Matchers {
   behavior of "PackageSpec"
 

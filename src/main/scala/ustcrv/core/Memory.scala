@@ -18,15 +18,17 @@ class IMem(val size: Int = 1024, val offset: Int = 0, val debug: Boolean = false
 
   val mem = Mem(size, UInt(32.W))
   val addr = (io.in - offset.U) >> 2.U
+  val drAddr = (io.drAddr - offset.U) >> 2.U
+  val dwAddr = (io.dwAddr - offset.U) >> 2.U
 
   io.out := mem.read(addr)
 
   if (debug) {
     when (io.dMode) {
-      mem.write(io.dwAddr >> 2.U, io.dwData)
+      mem.write(dwAddr, io.dwData)
       io.drData := DontCare
     } .otherwise {
-      io.drData := mem.read(io.drAddr)
+      io.drData := mem.read(drAddr)
     }
   } else {
     io.drData := DontCare
@@ -52,6 +54,7 @@ class DMem(val size: Int = 1024, val offset: Int = 0, val debug: Boolean = false
 
   val mem = Mem(size, UInt(32.W))
   val addr = (io.addr - offset.U) >> 2.U // access unit is 4 bytes
+  val dAddr = (io.dAddr - offset.U) >> 2.U // access unit is 4 bytes
   val data = RegInit(0.U(32.W))
   io.dataR := data
 
@@ -68,9 +71,9 @@ class DMem(val size: Int = 1024, val offset: Int = 0, val debug: Boolean = false
     io.drData := ddata
     when (io.dEnable) {
       when (io.dMode) {
-        mem.write(io.dAddr, io.dwData)
+        mem.write(dAddr, io.dwData)
       } .otherwise {
-        ddata := mem.read(io.dAddr)
+        ddata := mem.read(dAddr)
       }
     }
   } else {

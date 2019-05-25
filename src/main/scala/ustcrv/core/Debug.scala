@@ -94,25 +94,30 @@ class Debugger extends Module {
       imemWA := dataIn
     } .elsewhen (op === Debug.IMEMRD) {
       dataOut := io.idrData
-      imemRA := imemRA + 1.U
+      imemRA := imemRA + 4.U
     } .elsewhen (op === Debug.IMEMWD) {
       // Write data is sent via combinational circuit
       idMode := true.B
-      imemWA := imemWA + 1.U
     } .elsewhen (op === Debug.DMEMRA) {
       dmemA := dataIn
     } .elsewhen (op === Debug.DMEMWA) {
       dmemA := dataIn
     } .elsewhen (op === Debug.DMEMRD) {
       dataOut := io.ddataR
-      dmemA := dmemA + 1.U
+      dmemA := dmemA + 4.U
     } .elsewhen (op === Debug.DMEMWD) {
       // Write data is sent via combinational circuit
       ddMode := true.B
-      dmemA := dmemA + 1.U
     }
   } .elsewhen (!enable) {
     idMode := false.B
     ddMode := false.B
+  }
+
+  when (idMode) {
+    imemWA := imemWA + 4.U
+  }
+  when (ddMode) {
+    dmemA := dmemA + 4.U
   }
 }
