@@ -56,15 +56,13 @@ class DMem(val size: Int = 1024, val offset: Int = 0, val debug: Boolean = false
   val addr = (io.addr - offset.U) >> 2.U // access unit is 4 bytes
   val dAddr = (io.dAddr - offset.U) >> 2.U // access unit is 4 bytes
   val data = RegInit(0.U(32.W))
-  io.dataR := data
+  io.dataR := DontCare
 
   when (io.enable) {
     when (io.memRW) {
       mem.write(addr, io.dataW)
     } .otherwise {
-      val value = mem.read(addr)
-      data := value
-      io.dataR := value
+      io.dataR := mem.read(addr)
     }
   }
 
