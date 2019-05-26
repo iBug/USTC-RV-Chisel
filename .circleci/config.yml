@@ -22,6 +22,9 @@ jobs:
             - vendor/bundle
             - ~/.bundle
       - run: bash .circleci/prepare.sh
+      - run:
+          name: Update Algolia index
+          command: bundle exec jekyll algolia
       - run: bundle exec jekyll build
       - run: bash .circleci/patch.sh
       - run: bash .circleci/deploy.sh

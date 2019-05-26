@@ -39,10 +39,10 @@ search                   : # true, false (default)
 search_full_content      : # true, false (default)
 search_provider          : algolia # lunr (default), algolia, google
 algolia:
-  application_id         : # YOUR_APPLICATION_ID
-  index_name             : # YOUR_INDEX_NAME
-  search_only_api_key    : # YOUR_SEARCH_ONLY_API_KEY
-  powered_by             : true # true (default), false
+  application_id         : "CM5ZKX0CV3"
+  index_name             : "RISC-V Homepage"
+  search_only_api_key    : "aa942e5bdda7368300e322cba95f47f6"
+  powered_by             : true
 # SEO Related
 google_site_verification :
 bing_site_verification   :

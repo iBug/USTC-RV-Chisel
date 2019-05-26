@@ -5,4 +5,5 @@ gem "minimal-mistakes-jekyll"
 
 group :jekyll_plugins do
   gem "jekyll-tidy"
+  gem "jekyll-algolia"
 end
