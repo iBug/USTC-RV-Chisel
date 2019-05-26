@@ -67,19 +67,24 @@ class DMem(val size: Int = 1024, val offset: Int = 0, val debug: Boolean = false
   io.dataR := DontCare
 
   when (io.enable) {
-    when (io.memRW) {
-      val dataW = Vec(io.dataW(7, 0), io.dataW(15, 8), io.dataW(23, 16), io.dataW(31, 24))
+    when (io.memRW) { // Write
+      val dataW = MuxLookup(io.length,
+        Vec(io.dataW(7, 0), io.dataW(15, 8), io.dataW(23, 16), io.dataW(31, 24)),
+        Array(
+          Control.ML_B -> Vec(io.dataW(7, 0), io.dataW(7, 0), io.dataW(7, 0), io.dataW(7, 0)),
+          Control.ML_H -> Vec(io.dataW(7, 0), io.dataW(15, 8), io.dataW(7, 0), io.dataW(15, 8))
+      ))
       mem.write(addr, dataW, mask.toBools)
-    } .otherwise {
+    } .otherwise { // Read
       val data = mem.read(addr).asUInt
       val sb = Wire(SInt(32.W))
       val sh = Wire(SInt(32.W))
       val ub = Wire(UInt(32.W))
       val uh = Wire(UInt(32.W))
-      sb := (data >> subword)(7, 0).asSInt
-      sh := (Cat(data, data) >> subword)(15, 0).asSInt
-      ub := (data >> subword)(7, 0)
-      uh := (Cat(data, data) >> subword)(15, 0)
+      sb := (data >> (subword << 3.U))(7, 0).asSInt
+      sh := (Cat(data, data) >> (subword << 3.U))(15, 0).asSInt
+      ub := (data >> (subword << 3.U))(7, 0)
+      uh := (Cat(data, data) >> (subword << 3.U))(15, 0)
       io.dataR := Mux(io.sign.asBool,
         // Signed read
         MuxLookup(io.length, data, Array(
@@ -104,7 +109,9 @@ class DMem(val size: Int = 1024, val offset: Int = 0, val debug: Boolean = false
         val dwData = Vec(io.dwData(7, 0), io.dwData(15, 8), io.dwData(23, 16), io.dwData(31, 24))
         mem.write(dAddr, dwData)
       } .otherwise {
-        ddata := mem.read(dAddr).asUInt
+        val rawData = mem.read(dAddr).asUInt
+        ddata := rawData
+        io.drData := rawData
       }
     }
   } else {
