@@ -24,9 +24,6 @@ class ControlIO extends Bundle {
 }
 
 object Control {
-  val Y = true.B
-  val N = false.B
-
   val IMM_X = 0.U
   val IMM_I = 0.U
   val IMM_S = 1.U
@@ -62,6 +59,9 @@ object Control {
 class Control extends Module {
   val io = IO(new ControlIO)
   import Control._
+
+  val Y = true.B
+  val N = false.B
 
   //                    PCSel   ImmSel    RegWEn  BrType   BSel      ASel       ALUSel    MemRW     WBSel  MemLength MemSign
   //                      |       |         |       |       |         |           |         |         |        |        |

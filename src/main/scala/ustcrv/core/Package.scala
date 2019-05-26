@@ -54,4 +54,6 @@ class Package extends Module {
   core.dmemDR := dmem.dataR
   dmem.dataW := core.dmemDW
   dmem.memRW := core.dmemWE
+  dmem.length := core.dmemL
+  dmem.sign := core.dmemS
 }

@@ -11,6 +11,8 @@ class CoreIO extends Bundle {
   val dmemDR = Input(UInt(32.W))
   val dmemDW = Output(UInt(32.W))
   val dmemWE = Output(UInt(32.W))
+  val dmemL = Output(UInt(2.W))
+  val dmemS = Output(UInt(1.W))
 
   // Ports for debugging
   val pcReset = Input(Bool())
@@ -67,10 +69,12 @@ class Core extends Module {
   io.dmemA := alu.out
   io.dmemDW := regFile.dataB
   io.dmemWE := control.MemRW
+  io.dmemL := control.MemLength
+  io.dmemS := control.MemSign
 
   wb := MuxLookup(control.WBSel, 0.U(32.W), Array(
-    0.U -> io.dmemDR,
-    1.U -> alu.out,
-    2.U -> (pc.out + 4.U)
+    Control.WB_DM -> io.dmemDR,
+    Control.WB_ALU -> alu.out,
+    Control.WB_PC4 -> (pc.out + 4.U)
   ))
 }
