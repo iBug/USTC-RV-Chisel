@@ -23,9 +23,7 @@ class ControlIO extends Bundle {
   val MemSign = Output(UInt(1.W))
 }
 
-class Control extends Module {
-  val io = IO(new ControlIO)
-
+object Control {
   val Y = true.B
   val N = false.B
 
@@ -59,6 +57,11 @@ class Control extends Module {
 
   val MS_U = 0.U
   val MS_S = 1.U
+}
+
+class Control extends Module {
+  val io = IO(new ControlIO)
+  import Control._
 
   //                    PCSel   ImmSel    RegWEn  BrType   BSel      ASel       ALUSel    MemRW     WBSel  MemLength MemSign
   //                      |       |         |       |       |         |           |         |         |        |        |
