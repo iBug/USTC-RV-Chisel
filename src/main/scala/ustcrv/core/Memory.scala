@@ -81,10 +81,11 @@ class DMem(val size: Int = 1024, val offset: Int = 0, val debug: Boolean = false
       val sh = Wire(SInt(32.W))
       val ub = Wire(UInt(32.W))
       val uh = Wire(UInt(32.W))
-      sb := (data >> (subword << 3.U))(7, 0).asSInt
-      sh := (Cat(data, data) >> (subword << 3.U))(15, 0).asSInt
-      ub := (data >> (subword << 3.U))(7, 0)
-      uh := (Cat(data, data) >> (subword << 3.U))(15, 0)
+      val sw = subword << 3.U // sw = shift width
+      sb := (data >> sw)(7, 0).asSInt
+      sh := (Cat(data, data) >> sw)(15, 0).asSInt
+      ub := (data >> sw)(7, 0)
+      uh := (Cat(data, data) >> sw)(15, 0)
       io.dataR := Mux(io.sign.asBool,
         // Signed read
         MuxLookup(io.length, data, Array(
