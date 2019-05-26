@@ -19,6 +19,8 @@ class ControlIO extends Bundle {
   val ALUSel = Output(UInt(4.W))  // ALUop
   val MemRW = Output(Bool())  // Data Memory, 0: Read, 1: Write
   val WBSel = Output(UInt(2.W))  // For Write-back, 0: Data Memory, 1: ALU Result, 2: PC + 4
+  val LoadType = Output(UInt(3.W))
+  val StoreType = Output(UInt(2.W))
 }
 
 class Control extends Module {
@@ -50,48 +52,60 @@ class Control extends Module {
   val MEM_R = 0.U
   val MEM_W = 1.U
 
-  //                    PCSel   ImmSel    RegWEn  BrType   BSel      ASel       ALUSel    MemRW     WBSel
-  //                      |       |         |       |       |         |           |         |         |
-  val default = List(   PC_4,   IMM_X,      N,     XX,    B_RS2,    A_RS1,     ALU.ADD,   MEM_R,    WB_DM)
+  val LD_X   = 0.U
+  val LD_LW  = 1.U
+  val LD_LH  = 2.U
+  val LD_LB  = 3.U
+  val LD_LHU = 4.U
+  val LD_LBU = 5.U
+
+  val ST_X  = 0.U
+  val ST_SW = 1.U
+  val ST_SH = 2.U
+  val ST_SB = 3.U
+
+  //                    PCSel   ImmSel    RegWEn  BrType   BSel      ASel       ALUSel    MemRW     WBSel   LoadType StoreType
+  //                      |       |         |       |       |         |           |         |         |        |        |
+  val default = List(   PC_4,   IMM_X,      N,     XX,    B_RS2,    A_RS1,     ALU.ADD,   MEM_R,    WB_DM,   LD_X,    ST_X)
 
   val map = Array(
-    ADD    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.ADD,   MEM_R,   WB_ALU),
-    ADDI   ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_R,   WB_ALU),
-    AND    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.AND,   MEM_R,   WB_ALU),
-    ANDI   ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.AND,   MEM_R,   WB_ALU),
-    AUIPC  ->   List(   PC_4,   IMM_U,      Y,     XX,    B_IMM,     A_PC,     ALU.ADD,   MEM_R,   WB_ALU),
-    BEQ    ->   List(   PC_4,   IMM_B,      N,     EQ,    B_IMM,     A_PC,     ALU.ADD,   MEM_R,   WB_ALU),
-    BGE    ->   List(   PC_4,   IMM_B,      N,     GE,    B_IMM,     A_PC,     ALU.ADD,   MEM_R,   WB_ALU),
-    BGEU   ->   List(   PC_4,   IMM_B,      N,    GEU,    B_IMM,     A_PC,     ALU.ADD,   MEM_R,   WB_ALU),
-    BLT    ->   List(   PC_4,   IMM_B,      N,     LT,    B_IMM,     A_PC,     ALU.ADD,   MEM_R,   WB_ALU),
-    BLTU   ->   List(   PC_4,   IMM_B,      N,    LTU,    B_IMM,     A_PC,     ALU.ADD,   MEM_R,   WB_ALU),
-    BNE    ->   List(   PC_4,   IMM_B,      N,     NE,    B_IMM,     A_PC,     ALU.ADD,   MEM_R,   WB_ALU),
-    JAL    ->   List( PC_ALU,   IMM_J,      Y,     XX,    B_IMM,     A_PC,     ALU.ADD,   MEM_R,   WB_PC4),
-    JALR   ->   List( PC_ALU,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_R,   WB_PC4),
-    LB     ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_R,    WB_DM),
-    LBU    ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_R,    WB_DM),
-    LH     ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_R,    WB_DM),
-    LHU    ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_R,    WB_DM),
-    LW     ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_R,    WB_DM),
-    LUI    ->   List(   PC_4,   IMM_U,      Y,     XX,    B_IMM,     A_PC,  ALU.COPY_B,   MEM_R,   WB_ALU),
-    OR     ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,      ALU.OR,   MEM_R,   WB_ALU),
-    ORI    ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,      ALU.OR,   MEM_R,   WB_ALU),
-    SB     ->   List(   PC_4,   IMM_S,      N,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_W,   WB_ALU),
-    SH     ->   List(   PC_4,   IMM_S,      N,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_W,   WB_ALU),
-    SW     ->   List(   PC_4,   IMM_S,      N,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_W,   WB_ALU),
-    SLL    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.SLL,   MEM_R,   WB_ALU),
-    SLLI   ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.SLL,   MEM_R,   WB_ALU),
-    SLT    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.SLT,   MEM_R,   WB_ALU),
-    SLTI   ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.SLT,   MEM_R,   WB_ALU),
-    SLTIU  ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,    ALU.SLTU,   MEM_R,   WB_ALU),
-    SLTU   ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,    ALU.SLTU,   MEM_R,   WB_ALU),
-    SRA    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.SRA,   MEM_R,   WB_ALU),
-    SRAI   ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.SRA,   MEM_R,   WB_ALU),
-    SRL    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.SRL,   MEM_R,   WB_ALU),
-    SRLI   ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.SRL,   MEM_R,   WB_ALU),
-    SUB    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.SUB,   MEM_R,   WB_ALU),
-    XOR    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.XOR,   MEM_R,   WB_ALU),
-    XORI   ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.XOR,   MEM_R,   WB_ALU)
+    ADD    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.ADD,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    ADDI   ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    AND    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.AND,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    ANDI   ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.AND,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    AUIPC  ->   List(   PC_4,   IMM_U,      Y,     XX,    B_IMM,     A_PC,     ALU.ADD,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    BEQ    ->   List(   PC_4,   IMM_B,      N,     EQ,    B_IMM,     A_PC,     ALU.ADD,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    BGE    ->   List(   PC_4,   IMM_B,      N,     GE,    B_IMM,     A_PC,     ALU.ADD,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    BGEU   ->   List(   PC_4,   IMM_B,      N,    GEU,    B_IMM,     A_PC,     ALU.ADD,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    BLT    ->   List(   PC_4,   IMM_B,      N,     LT,    B_IMM,     A_PC,     ALU.ADD,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    BLTU   ->   List(   PC_4,   IMM_B,      N,    LTU,    B_IMM,     A_PC,     ALU.ADD,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    BNE    ->   List(   PC_4,   IMM_B,      N,     NE,    B_IMM,     A_PC,     ALU.ADD,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    JAL    ->   List( PC_ALU,   IMM_J,      Y,     XX,    B_IMM,     A_PC,     ALU.ADD,   MEM_R,   WB_PC4,   LD_X,    ST_X),
+    JALR   ->   List( PC_ALU,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_R,   WB_PC4,   LD_X,    ST_X),
+    LB     ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_R,    WB_DM,  LD_LB,    ST_X),
+    LBU    ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_R,    WB_DM, LD_LBU,    ST_X),
+    LH     ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_R,    WB_DM,  LD_LH,    ST_X),
+    LHU    ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_R,    WB_DM, LD_LHU,    ST_X),
+    LW     ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_R,    WB_DM,  LD_LW,    ST_X),
+    LUI    ->   List(   PC_4,   IMM_U,      Y,     XX,    B_IMM,     A_PC,  ALU.COPY_B,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    OR     ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,      ALU.OR,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    ORI    ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,      ALU.OR,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    SB     ->   List(   PC_4,   IMM_S,      N,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_W,   WB_ALU,   LD_X,   ST_SB),
+    SH     ->   List(   PC_4,   IMM_S,      N,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_W,   WB_ALU,   LD_X,   ST_SH),
+    SW     ->   List(   PC_4,   IMM_S,      N,     XX,    B_IMM,    A_RS1,     ALU.ADD,   MEM_W,   WB_ALU,   LD_X,   ST_SW),
+    SLL    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.SLL,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    SLLI   ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.SLL,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    SLT    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.SLT,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    SLTI   ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.SLT,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    SLTIU  ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,    ALU.SLTU,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    SLTU   ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,    ALU.SLTU,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    SRA    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.SRA,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    SRAI   ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.SRA,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    SRL    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.SRL,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    SRLI   ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.SRL,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    SUB    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.SUB,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    XOR    ->   List(   PC_4,   IMM_X,      Y,     XX,    B_RS2,    A_RS1,     ALU.XOR,   MEM_R,   WB_ALU,   LD_X,    ST_X),
+    XORI   ->   List(   PC_4,   IMM_I,      Y,     XX,    B_IMM,    A_RS1,     ALU.XOR,   MEM_R,   WB_ALU,   LD_X,    ST_X)
   )
 
   val CtrlSignals = ListLookup(io.inst, default, map)
@@ -105,4 +119,6 @@ class Control extends Module {
   io.ALUSel := CtrlSignals(6)
   io.MemRW := CtrlSignals(7)
   io.WBSel := CtrlSignals(8)
+  io.LoadType := CtrlSignals(9)
+  io.StoreType := CtrlSignals(10)
 }
