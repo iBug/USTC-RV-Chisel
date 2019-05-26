@@ -36,7 +36,7 @@ val defaultVersions = Map(
   "firrtl" -> "1.2-SNAPSHOT"
 )
 
-updateOptions := updateOptions.value.withLatestSnapshots(true)
+updateOptions := updateOptions.value.withLatestSnapshots(false)
 
 libraryDependencies ++= Seq("chisel3", "chisel-iotesters").map {
   dep: String => "edu.berkeley.cs" %% dep % sys.props.getOrElse(dep + "Version", defaultVersions(dep)) }
