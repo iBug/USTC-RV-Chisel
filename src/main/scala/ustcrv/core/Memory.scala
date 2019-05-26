@@ -69,12 +69,12 @@ class DMem(val size: Int = 1024, val offset: Int = 0, val debug: Boolean = false
   when (io.enable) {
     when (io.memRW) { // Write
       val dataW = MuxLookup(io.length,
-        Vec(io.dataW(7, 0), io.dataW(15, 8), io.dataW(23, 16), io.dataW(31, 24)),
+        VecInit(io.dataW(7, 0), io.dataW(15, 8), io.dataW(23, 16), io.dataW(31, 24)),
         Array(
-          Control.ML_B -> Vec(io.dataW(7, 0), io.dataW(7, 0), io.dataW(7, 0), io.dataW(7, 0)),
-          Control.ML_H -> Vec(io.dataW(7, 0), io.dataW(15, 8), io.dataW(7, 0), io.dataW(15, 8))
+          Control.ML_B -> VecInit(io.dataW(7, 0), io.dataW(7, 0), io.dataW(7, 0), io.dataW(7, 0)),
+          Control.ML_H -> VecInit(io.dataW(7, 0), io.dataW(15, 8), io.dataW(7, 0), io.dataW(15, 8))
       ))
-      mem.write(addr, dataW, mask.toBools)
+      mem.write(addr, dataW, mask.asBools)
     } .otherwise { // Read
       val data = mem.read(addr).asUInt
       val sb = Wire(SInt(32.W))
@@ -107,7 +107,7 @@ class DMem(val size: Int = 1024, val offset: Int = 0, val debug: Boolean = false
     io.drData := ddata
     when (io.dEnable) {
       when (io.dMode) {
-        val dwData = Vec(io.dwData(7, 0), io.dwData(15, 8), io.dwData(23, 16), io.dwData(31, 24))
+        val dwData = VecInit(io.dwData(7, 0), io.dwData(15, 8), io.dwData(23, 16), io.dwData(31, 24))
         mem.write(dAddr, dwData)
       } .otherwise {
         val rawData = mem.read(dAddr).asUInt
