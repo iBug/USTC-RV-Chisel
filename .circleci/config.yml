@@ -9,7 +9,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - r-{{ .Branch }}-{{ .Environment.CIRCLE_PREVIOUS_BUILD_NUM }
+            - r-{{ .Branch }}-{{ .Environment.CIRCLE_PREVIOUS_BUILD_NUM }}
             - r-master
       - run:
           name: Update SBT Dependency
