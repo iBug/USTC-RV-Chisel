@@ -12,8 +12,9 @@ jobs:
             - r-{{ .Branch }}-{{ .Environment.CIRCLE_PREVIOUS_BUILD_NUM }}
             - r-master
       - run:
-          name: Update SBT Dependency
-          command: sbt update
+          name: Run SBT
+          #command: sbt "scalastyle" "test:runMain ustcrv.Main" "runMain ustcrv.Main"
+          command: sbt update "test:runMain ustcrv.Main" "runMain ustcrv.Main"
       - run:
           name: Cleanup cache
           command: |
@@ -26,10 +27,6 @@ jobs:
             - ~/.sbt
             - ~/.ivy2/cache
           key: r-{{ .Branch }}-{{ .Environment.CIRCLE_BUILD_NUM }}
-      - run:
-          name: Run SBT
-          #command: sbt "scalastyle" "test:runMain ustcrv.Main" "runMain ustcrv.Main"
-          command: sbt "test:runMain ustcrv.Main" "runMain ustcrv.Main"
       - run:
           name: Collect Artifacts
           command: |
