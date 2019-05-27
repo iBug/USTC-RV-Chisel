@@ -14,7 +14,7 @@ class Main extends Module {
   val io = IO(new MainIO)
 
   // This thing itself is a state machine
-  val state = RegInit(15.U(4.W))
+  val state = RegInit(12.U(4.W))
   val action = RegInit(0.U(4.W))
 
   // Fixed storage
@@ -60,9 +60,9 @@ class Main extends Module {
   // State 12: Write IMem address
   when (state === 12.U) {
     dControl := Debug.IMEMWA
+    dDataIn := romAddr
     when (!dEnable) {
       dEnable := true.B
-      dDataIn := romAddr
     } .otherwise {
       dEnable := false.B
       state := 13.U // Go write IMem data
@@ -88,9 +88,9 @@ class Main extends Module {
   // State 14: Write DMem address
   when (state === 14.U) {
     dControl := Debug.DMEMWA
+    dDataIn := romAddr
     when (!dEnable) {
       dEnable := true.B
-      dDataIn := romAddr
     } .otherwise {
       dEnable := false.B
       state := 15.U // Go write DMem data
