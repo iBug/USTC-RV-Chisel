@@ -9,8 +9,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - dep-{{ .Branch }}
-            - dep-master
+            - r-{{ .Branch }}-{{ .Environment.CIRCLE_PREVIOUS_BUILD_NUM }
+            - r-master
       - run:
           name: Update SBT Dependency
           command: sbt update
@@ -22,9 +22,10 @@ jobs:
             find $HOME/.sbt -name "*.lock" -print -delete
       - save_cache:
           paths:
+            - target/ # saves some time
             - ~/.sbt
             - ~/.ivy2/cache
-          key: dep-{{ .Branch }}
+          key: r-{{ .Branch }}-{{ .Environment.CIRCLE_BUILD_NUM }}
       - run:
           name: Run SBT
           command: sbt "scalastyle" "test:runMain ustcrv.Main" "runMain ustcrv.Main"
