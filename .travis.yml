@@ -3,10 +3,11 @@ dist: xenial
 language: scala
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION scalastyle "test:runMain ustcrv.Main" "runMain ustcrv.Main"
+  - sbt ++$TRAVIS_SCALA_VERSION update "test:runMain ustcrv.Main" "runMain ustcrv.Main"
 
 cache:
   directories:
+    - target
     - $HOME/.ivy2/cache
     - $HOME/.sbt
 
