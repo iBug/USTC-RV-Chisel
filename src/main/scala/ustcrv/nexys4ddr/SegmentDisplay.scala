@@ -33,7 +33,7 @@ class SegmentOutput extends Bundle {
 }
 
 class SegmentDisplayIO extends Bundle {
-  val segmentOutput = new SegmentOutput
+  val out = new SegmentOutput
   val numA = Input(UInt(32.W))
   val numB = Input(UInt(32.W))
 }
@@ -54,9 +54,9 @@ class SegmentDisplay(val clk: BigInt = 10000) extends Module {
     io.numA(15, 12)
   ))
 
-  io.segmentOutput.SEG := SegmentDisplay(digits(pos))
-  io.segmentOutput.DP := true.B // no DP
-  io.segmentOutput.AN := ~(1.U(8.W) << pos)
+  io.out.SEG := SegmentDisplay(digits(pos))
+  io.out.DP := true.B // no DP
+  io.out.AN := ~(1.U(8.W) << pos)
 
   when (count >= clk.U) {
     count := 0.U
