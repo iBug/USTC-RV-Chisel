@@ -34,10 +34,6 @@ jobs:
           name: Collect Artifacts
           command: |
             find target/ -name '*.v' -print0 | xargs -0r tar zcf verilog.tar.gz
-            mkdir -p waveforms && find test_run_dir/ -name '*.vcd' -print0 | xargs -0rI % mv % waveforms/ && tar zcf waveforms.tar.gz waveforms
-      - store_artifacts:
-          path: target/scalastyle-result.xml
+            # mkdir -p waveforms && find test_run_dir/ -name '*.vcd' -print0 | xargs -0rI % mv % waveforms/ && tar zcf waveforms.tar.gz waveforms
       - store_artifacts:
           path: verilog.tar.gz
-      - store_artifacts:
-          path: waveforms.tar.gz
