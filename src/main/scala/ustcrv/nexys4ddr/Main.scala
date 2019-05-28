@@ -30,20 +30,18 @@ class Main extends Module {
   val dispAddr = Wire(UInt(32.W))
   val dispData = RegInit(0.U(32.W))
   val romAddr = RegInit(0.U(32.W))
-  val romData = Wire(UInt(32.W))
 
   val dControl = WireInit(0.U(4.W)) // Equals to Debug.NOP
   val dEnable = RegInit(false.B)
   val dDataIn = WireInit(0.U(32.W))
   val dDataOut = WireInit(debug.dDataOut)
 
-  io.LED := 0.U
+  io.LED := (1.U << state)
   seg.numA := dispAddr
   seg.numB := dispData
   debug.pcEnable := io.SW(0)
 
   dispAddr := Cat(io.SW(12, 2), 0.U(2.W))
-  romData := 0.U
 
   imem.addr := romAddr
   dmem.addr := romAddr
@@ -84,10 +82,12 @@ class Main extends Module {
   }
   when (state === 3.U) { // Start of read IMem/DMem
     dEnable := true.B
+    dDataIn := dispAddr
     state := 4.U
   }
   when (state === 4.U) {
     dEnable := false.B
+    dDataIn := dispAddr
     action := Mux(action === Debug.DMEMRA, Debug.DMEMRD, Debug.IMEMRD)
     state := 1.U
   }
@@ -117,7 +117,7 @@ class Main extends Module {
       dEnable := true.B
     } .otherwise {
       dEnable := false.B
-      when (romAddr === 100.U) {
+      when (romAddr === imem.d.U) {
         romAddr := 0x1000.U
         state := 14.U // Go write DMem address
       } .otherwise {
@@ -145,7 +145,7 @@ class Main extends Module {
       dEnable := true.B
     } .otherwise {
       dEnable := false.B
-      when (romAddr === 0x1010.U) { // Less DMem data to write
+      when (romAddr === (0x1000 + dmem.d).U) { // Less DMem data to write
         romAddr := 0.U
         state := 0.U // Normal
       } .otherwise {
