@@ -3,7 +3,7 @@ title: "RISC-V C 工具链"
 tagline: "RISC-V C Toolchain"
 ---
 
-RISC-V 官方的 C 工具链可以在 <https://github.com/freechipsproject/rocket-tools> 找到。在国内需要加速下载（clone submodule 很慢）的话可以使用 https://github.com/cnrv/clone-helpers/ 辅助。
+RISC-V 官方的 C 工具链可以在 <https://github.com/freechipsproject/rocket-tools> 找到。在国内需要加速下载（clone submodule 很慢）的话可以使用 <https://github.com/cnrv/clone-helpers> 辅助。
 
 编译需要的时间比较长。注意：如果需要生成 RV32 的程序，使用脚本 `./build-rv32ima.sh`（而非 `./build.sh`）。下面都以 RV32I 指令集为例。
 
@@ -45,7 +45,7 @@ $ $RISCV/bin/spike -m128 pk a.out
 Hello, world!
 ```
 
-`-m128` 参数指定了占用的内存大小。`spike` 默认占用 2GB 的内存，如果内存大小不足，启动会出错。而 `pk` 是 <https://github.com/riscv/riscv-pk/>，一个轻量级的，可运行静态链接的 RISCV ELF 应用程序的环境（Proxy Kernel）。
+`-m128` 参数指定了占用的内存大小。`spike` 默认占用 2GB 的内存，如果内存大小不足，启动会出错。而 `pk` 是 <https://github.com/riscv/riscv-pk>，一个轻量级的，可运行静态链接的 RISCV ELF 应用程序的环境（Proxy Kernel）。
 
 如果不想要链接 C 库，需要参数 `-nostdlib`。
 
@@ -194,7 +194,7 @@ SECTIONS
 int getchar(void)
 {
   while((io.uart.stat&2)==0); // uart empty, wait...
-  
+
   return io.uart.fifo;
 }
 
@@ -205,7 +205,7 @@ int putchar(int c)
     while(io.uart.stat&1); // uart busy, wait...
     io.uart.fifo = '\r';  
   }
-  
+
   while(io.uart.stat&1); // uart busy, wait...
   return io.uart.fifo = c;
 }

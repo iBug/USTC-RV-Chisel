@@ -3,7 +3,7 @@ title: "RISC-V 官方工具链相关笔记"
 tagline: "RISC-V Toolchain"
 ---
 
-[C 工具链]({{ page.dir }}/c)
+[C 工具链]({{ page.dir }}c)
 
-[Spike 模拟器]({{ page.dir }}/spike)
+[Spike 模拟器]({{ page.dir }}spike)
 
