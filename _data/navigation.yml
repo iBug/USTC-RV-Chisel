@@ -7,11 +7,11 @@ main: # Top nav bar
     url: https://github.com/iBug/USTC-RV-Chisel
 
 sidebar:
-  - title: RISC-V Design and Implementation
+  - title: "RISC-V 处理器设计"
     children:
-      - title: "Main Page"
+      - title: "主页"
         url: /core
-  - title: C Toolchain
+  - title: "C 语言工具链"
     children:
-      - title: "Main Page"
+      - title: "主页"
         url: /toolchain
