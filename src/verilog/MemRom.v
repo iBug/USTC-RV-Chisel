@@ -1,19 +1,19 @@
-module IMemRom (
+module IMemROM (
     input [7:0] addr,
     output [31:0] data
 );
     reg [31:0] rom [255:0];
 
     initial
-        $readmemh("data/riscv.imem");
+        $readmemh("USTC-RV-Chisel.srcs/sources_1/new/data/riscv.imem");
 endmodule
 
-module DMemRom (
+module DMemROM (
     input [7:0] addr,
     output [31:0] data
 );
     reg [31:0] rom [255:0];
 
     initial
-        $readmemh("data/riscv.dmem");
+        $readmemh("USTC-RV-Chisel.srcs/sources_1/new/data/riscv.dmem");
 endmodule
