@@ -128,7 +128,7 @@
                   </ul>
                 </nav>
               </aside>
-              <p>RISC-V 官方的 C 工具链可以在 <a href="https://github.com/freechipsproject/rocket-tools">https://github.com/freechipsproject/rocket-tools</a> 找到。在国内需要加速下载（clone submodule 很慢）的话可以使用 https://github.com/cnrv/clone-helpers/ 辅助。</p>
+              <p>RISC-V 官方的 C 工具链可以在 <a href="https://github.com/freechipsproject/rocket-tools">https://github.com/freechipsproject/rocket-tools</a> 找到。在国内需要加速下载（clone submodule 很慢）的话可以使用 <a href="https://github.com/cnrv/clone-helpers">https://github.com/cnrv/clone-helpers</a> 辅助。</p>
               <p>编译需要的时间比较长。注意：如果需要生成 RV32 的程序，使用脚本 <code class="highlighter-rouge">./build-rv32ima.sh</code>（而非 <code class="highlighter-rouge">./build.sh</code>）。下面都以 RV32I 指令集为例。</p>
               <h2 id="程序的编译">程序的编译</h2>
               <p>Hello world 程序通常被认为是最简单的样例程序。</p>
@@ -171,7 +171,7 @@ Hello, world!
 </code></pre>
                 </div>
               </div>
-              <p><code class="highlighter-rouge">-m128</code> 参数指定了占用的内存大小。<code class="highlighter-rouge">spike</code> 默认占用 2GB 的内存，如果内存大小不足，启动会出错。而 <code class="highlighter-rouge">pk</code> 是 <a href="https://github.com/riscv/riscv-pk/">https://github.com/riscv/riscv-pk/</a>，一个轻量级的，可运行静态链接的 RISCV ELF 应用程序的环境（Proxy Kernel）。</p>
+              <p><code class="highlighter-rouge">-m128</code> 参数指定了占用的内存大小。<code class="highlighter-rouge">spike</code> 默认占用 2GB 的内存，如果内存大小不足，启动会出错。而 <code class="highlighter-rouge">pk</code> 是 <a href="https://github.com/riscv/riscv-pk">https://github.com/riscv/riscv-pk</a>，一个轻量级的，可运行静态链接的 RISCV ELF 应用程序的环境（Proxy Kernel）。</p>
               <p>如果不想要链接 C 库，需要参数 <code class="highlighter-rouge">-nostdlib</code>。</p>
               <p>现在，我们以下面这个程序作为示例。</p>
               <div class="highlighter-rouge">
@@ -319,7 +319,7 @@ SECTIONS
 <span class="kt">int</span> <span class="nf">getchar</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="k">while</span><span class="p">((</span><span class="n">io</span><span class="p">.</span><span class="n">uart</span><span class="p">.</span><span class="n">stat</span><span class="o">&amp;</span><span class="mi">2</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span> <span class="c1">// uart empty, wait...
-</span>  
+</span>
   <span class="k">return</span> <span class="n">io</span><span class="p">.</span><span class="n">uart</span><span class="p">.</span><span class="n">fifo</span><span class="p">;</span>
 <span class="p">}</span>
 
@@ -330,7 +330,7 @@ SECTIONS
     <span class="k">while</span><span class="p">(</span><span class="n">io</span><span class="p">.</span><span class="n">uart</span><span class="p">.</span><span class="n">stat</span><span class="o">&amp;</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// uart busy, wait...
 </span>    <span class="n">io</span><span class="p">.</span><span class="n">uart</span><span class="p">.</span><span class="n">fifo</span> <span class="o">=</span> <span class="sc">'\r'</span><span class="p">;</span>  
   <span class="p">}</span>
-  
+
   <span class="k">while</span><span class="p">(</span><span class="n">io</span><span class="p">.</span><span class="n">uart</span><span class="p">.</span><span class="n">stat</span><span class="o">&amp;</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// uart busy, wait...
 </span>  <span class="k">return</span> <span class="n">io</span><span class="p">.</span><span class="n">uart</span><span class="p">.</span><span class="n">fifo</span> <span class="o">=</span> <span class="n">c</span><span class="p">;</span>
 <span class="p">}</span>
