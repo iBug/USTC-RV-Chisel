@@ -123,15 +123,14 @@ class Debugger extends Module {
       // Write data is sent via combinational circuit
       ddMode := true.B
     }
-  } .elsewhen (!enable) {
-    idMode := false.B
-    ddMode := false.B
   }
 
   when (idMode) {
     imemWA := imemWA + 4.U
+    idMode := false.B
   }
   when (ddMode) {
     dmemA := dmemA + 4.U
+    ddMode := false.B
   }
 }

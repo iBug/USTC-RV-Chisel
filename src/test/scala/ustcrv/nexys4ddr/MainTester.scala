@@ -24,5 +24,11 @@ object MainTests extends App {
 }
 
 class MainTester(val c: Main) extends PeekPokeTester(c) {
-  // TBA
+  poke(c.io.SW, 4 * 0)
+  step(240)
+  expect(c.io.data, 0x5B26)
+  for (n <- 0 until 10) {
+    expect(c.io.LED, 16) // will fail
+    step(1)
+  }
 }

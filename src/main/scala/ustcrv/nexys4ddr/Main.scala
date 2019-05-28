@@ -10,6 +10,7 @@ class MainIO extends Bundle {
   val seg = new SegmentOutput
   val SW = Input(UInt(16.W))
   val LED = Output(UInt(16.W))
+  //val data = Output(UInt(32.W)) // For debugging
 }
 
 class Main extends Module {
@@ -35,6 +36,7 @@ class Main extends Module {
   val dEnable = RegInit(false.B)
   val dDataIn = WireInit(0.U(32.W))
   val dDataOut = WireInit(debug.dDataOut)
+  //io.data := dispData // For debugging
 
   io.LED := (1.U << state)
   seg.numA := dispAddr
@@ -55,16 +57,16 @@ class Main extends Module {
     dControl := Debug.NOP
     action := 0.U // XXX
 
-    when (PosEdge(io.SW(1))) { // action: STEP
+    when (PosEdge(io.SW(1), 4)) { // action: STEP
       action := Debug.STEP
       state := 1.U
     } .otherwise { // No action, fall back to reading mems
+      state := 3.U
       when (io.SW(12)) { // 0x1000 is DMem
         action := Debug.DMEMRA
       } .otherwise { // IMem
         action := Debug.IMEMRA
       }
-      state := 3.U
     }
   } .elsewhen (state < 12.U) {
     dControl := action
@@ -107,6 +109,7 @@ class Main extends Module {
     } .otherwise {
       dEnable := false.B
       state := 13.U // Go write IMem data
+      romAddr := romAddr - 1.U // Unknown issue, work around it
     }
   }
   // State 13: Write IMem data
@@ -115,14 +118,14 @@ class Main extends Module {
     dDataIn := imem.data
     when (!dEnable) {
       dEnable := true.B
-    } .otherwise {
-      dEnable := false.B
       when (romAddr === imem.d.U) {
         romAddr := 0x1000.U
         state := 14.U // Go write DMem address
       } .otherwise {
         romAddr := romAddr + 1.U // ROM has 32-bit word
       }
+    } .otherwise {
+      dEnable := false.B
     }
   }
 
@@ -143,14 +146,14 @@ class Main extends Module {
     dDataIn := dmem.data
     when (!dEnable) {
       dEnable := true.B
-    } .otherwise {
-      dEnable := false.B
       when (romAddr === (0x1000 + dmem.d).U) { // Less DMem data to write
         romAddr := 0.U
         state := 0.U // Normal
       } .otherwise {
         romAddr := romAddr + 1.U
       }
+    } .otherwise {
+      dEnable := false.B
     }
   }
 }
