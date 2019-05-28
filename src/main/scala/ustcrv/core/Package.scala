@@ -11,6 +11,9 @@ class PackageIO extends Bundle {
   val dEnable = Input(Bool())
   val dDataIn = Input(UInt(32.W))
   val dDataOut = Output(UInt(32.W))
+
+  // Ports deprived from debugger
+  val pcEnable = Input(Bool())
 }
 
 class Package extends Module {
@@ -28,7 +31,7 @@ class Package extends Module {
   io.dDataOut := debugger.dataOut
 
   // Core and debugger
-  core.enable := debugger.pcEnable
+  core.enable := io.pcEnable // Used to be managed by debugger
   core.pcReset := debugger.pcReset
   core.pcStep := debugger.pcStep
   debugger.pcValue := core.pcValue

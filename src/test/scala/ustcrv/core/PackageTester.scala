@@ -40,6 +40,9 @@ class PackageTester(val c: Package) extends PeekPokeTester(c) {
     step(1)
   }
 
+  // Initialize
+  poke(c.io.pcEnable, false)
+
   // Write to IMem
   poke(c.io.dControl, Debug.IMEMWA)
   poke(c.io.dDataIn, 0)
@@ -83,14 +86,11 @@ class PackageTester(val c: Package) extends PeekPokeTester(c) {
   // Run the CPU
   poke(c.io.dControl, Debug.READPC)
   debugStep
-  poke(c.io.dControl, Debug.START)
-  debugStep
-  for (i <- 0 until 2000 - 2) {
-    step(1)
-  }
-  poke(c.io.dControl, Debug.STOP)
-  debugStep
-  println("")
+  println("CPU start")
+  poke(c.io.pcEnable, true)
+  step(2000)
+  poke(c.io.pcEnable, false)
+  println("CPU stop")
 
   // Check DMem stuff
   poke(c.io.dControl, Debug.DMEMRA)

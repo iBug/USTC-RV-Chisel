@@ -28,7 +28,7 @@ object DebugOutput {
 class DebugIO extends Bundle {
   // Inputs
   val enable = Input(Bool())
-  val control = Input(UInt(4.W)) // XXX: Expand this signal?
+  val control = Input(UInt(4.W))
   val dataIn = Input(UInt(32.W))
   val dataOut = Output(UInt(32.W))
 
