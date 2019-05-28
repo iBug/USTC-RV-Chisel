@@ -78,7 +78,7 @@ class Main extends Module {
   }
   when (state === 2.U) {
     dEnable := false.B
-    dispData := debug.dDataOut
+    dispData := dDataOut
     action := 0.U
     state := 0.U
   }

@@ -6,7 +6,7 @@ import chisel3.util._
 object SegmentDisplay {
   val D: Array[(UInt, UInt)] = Array(
     0.U -> "b1000000".U(7.W),
-    1.U -> "b1111011".U(7.W),
+    1.U -> "b1111001".U(7.W),
     2.U -> "b0100100".U(7.W),
     3.U -> "b0110000".U(7.W),
     4.U -> "b0011001".U(7.W),
