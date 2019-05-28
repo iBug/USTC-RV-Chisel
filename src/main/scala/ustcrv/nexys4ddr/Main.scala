@@ -4,10 +4,12 @@ import chisel3._
 import chisel3.util._
 
 import ustcrv.core.{Debug, Package}
+import ustcrv.util._
 
 class MainIO extends Bundle {
-  val seg = new SegmentDisplayIO
+  val seg = new SegmentOutput
   val SW = Input(UInt(16.W))
+  val LED = Output(UInt(16.W))
 }
 
 class Main extends Module {
@@ -35,8 +37,13 @@ class Main extends Module {
   val dDataIn = WireInit(0.U(32.W))
   val dDataOut = WireInit(debug.dDataOut)
 
+  io.LED := 0.U
+  seg.numA := dispAddr
+  seg.numB := dispData
+  debug.pcEnable := io.SW(0)
+
   dispAddr := Cat(io.SW(12, 2), 0.U(2.W))
-  romData := DontCare
+  romData := 0.U
 
   imem.addr := romAddr
   dmem.addr := romAddr
@@ -46,10 +53,44 @@ class Main extends Module {
   debug.dDataIn := dDataIn
 
   when (state === 0.U) {
+    dEnable := false.B
+    dControl := Debug.NOP
     action := 0.U // XXX
+
+    when (PosEdge(io.SW(1))) { // action: STEP
+      action := Debug.STEP
+      state := 1.U
+    } .otherwise { // No action, fall back to reading mems
+      when (io.SW(12)) { // 0x1000 is DMem
+        action := Debug.DMEMRA
+      } .otherwise { // IMem
+        action := Debug.IMEMRA
+      }
+      state := 3.U
+    }
+  } .elsewhen (state < 12.U) {
+    dControl := action
   }
 
-  // actions?
+  when (state === 1.U) {
+    dEnable := true.B
+    state := 2.U
+  }
+  when (state === 2.U) {
+    dEnable := false.B
+    dispData := debug.dDataOut
+    action := 0.U
+    state := 0.U
+  }
+  when (state === 3.U) { // Start of read IMem/DMem
+    dEnable := true.B
+    state := 4.U
+  }
+  when (state === 4.U) {
+    dEnable := false.B
+    action := Mux(action === Debug.DMEMRA, Debug.DMEMRD, Debug.IMEMRD)
+    state := 1.U
+  }
 
   /*
    #######################################
