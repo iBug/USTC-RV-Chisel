@@ -13,6 +13,12 @@ class MainIO extends Bundle {
   //val data = Output(UInt(32.W)) // For debugging
 }
 
+class MainWithClock extends Module {
+  val io = IO(new MainIO)
+  val main = withClockAndReset (CPUClock(clock), reset) { Module(new Main) }.io
+  io <> main
+}
+
 class Main extends Module {
   val io = IO(new MainIO)
 
@@ -25,7 +31,7 @@ class Main extends Module {
   val dmem = Module(new DMemROM).io
 
   val debug = Module(new Package).io
-  val seg = Module(new SegmentDisplay).io
+  val seg = withClockAndReset(clock, false.B) { Module(new SegmentDisplay) }.io
   io.seg <> seg.out
 
   val dispAddr = Wire(UInt(32.W))
@@ -39,8 +45,8 @@ class Main extends Module {
   //io.data := dispData // For debugging
 
   io.LED := (1.U << state)
-  seg.numA := dispAddr
-  seg.numB := dispData
+  seg.numA := Mux(io.SW(15), dispData(31, 16), dispAddr(15, 0))
+  seg.numB := dispData(15, 0)
   debug.pcEnable := io.SW(0)
 
   dispAddr := Cat(io.SW(12, 2), 0.U(2.W))

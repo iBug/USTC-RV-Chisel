@@ -34,8 +34,8 @@ class SegmentOutput extends Bundle {
 
 class SegmentDisplayIO extends Bundle {
   val out = new SegmentOutput
-  val numA = Input(UInt(32.W))
-  val numB = Input(UInt(32.W))
+  val numA = Input(UInt(16.W))
+  val numB = Input(UInt(16.W))
 }
 
 class SegmentDisplay(val clk: BigInt = 10000) extends Module {
