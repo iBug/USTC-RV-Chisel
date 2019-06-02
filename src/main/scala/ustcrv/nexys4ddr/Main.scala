@@ -13,13 +13,13 @@ class MainIO extends Bundle {
   //val data = Output(UInt(32.W)) // For debugging
 }
 
-class MainWithClock extends Module {
+class MainWithClock(val freq: BigInt = 100000000) extends Module {
   val io = IO(new MainIO)
-  val main = withClockAndReset (CPUClock(clock), reset) { Module(new Main) }.io
+  val main = withClockAndReset (CPUClock(clock), reset) { Module(new Main(freq)) }.io
   io <> main
 }
 
-class Main extends Module {
+class Main(val freq: BigInt = 100000000) extends Module {
   val io = IO(new MainIO)
 
   // This thing itself is a state machine
@@ -31,7 +31,7 @@ class Main extends Module {
   val dmem = Module(new DMemROM).io
 
   val debug = Module(new Package).io
-  val seg = withClockAndReset(clock, false.B) { Module(new SegmentDisplay) }.io
+  val seg = withClockAndReset(clock, false.B) { Module(new SegmentDisplay(freq / 1000)) }.io
   io.seg <> seg.out
 
   val dispAddr = Wire(UInt(32.W))

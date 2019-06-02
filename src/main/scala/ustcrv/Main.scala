@@ -7,5 +7,11 @@ object Main extends App {
   if (!Args.contains("--target-dir") && !Args.contains("-td")) {
     Args ++= Array("-td", "target")
   }
-  Driver.execute(Args, () => new ustcrv.nexys4ddr.Main)
+  var i: Int = Args indexOf "-@"
+  if (i != -1) {
+    val freq = Args(i + 1).toInt
+    Driver.execute(Args patch(i, Nil, 2), () => new ustcrv.nexys4ddr.MainWithClock(freq))
+  } else {
+    Driver.execute(Args, () => new ustcrv.nexys4ddr.Main)
+  }
 }
