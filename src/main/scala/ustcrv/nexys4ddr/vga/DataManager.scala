@@ -17,13 +17,14 @@ class DataManagerIO extends Bundle {
 class DataManager extends Module {
   val io = IO(new DataManagerIO)
 
+  val enable = PosEdge(io.enable)
   val posX = RegInit(0.U(8.W))
   val posY = RegInit(0.U(8.W))
   //val offsetY = RegInit(0.U(8.W)) // For scrolling
   io.wAddr := posY * 80.U + posX
   io.wData := Mux(io.data =/= 0x0A.U && (io.data <= 0x20.U || io.data >= 0x7F.U),
     0.U(8.W), io.data)
-  io.wEnable := PosEdge(io.enable)
+  io.wEnable := enable
 
   val nextPosX = Mux(
     posX === 79.U || io.data === 0x0A.U,
@@ -33,7 +34,7 @@ class DataManager extends Module {
     Mux(posY === 29.U, 0.U, posY + 1.U), posY)
 
   println("TaoKY very strong!!!")
-  when (io.enable) {
+  when (enable) {
     posX := nextPosX
     posY := nextPosY
   }

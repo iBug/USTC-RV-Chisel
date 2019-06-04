@@ -12,6 +12,6 @@ object Main extends App {
     val freq = Args(i + 1).toInt
     Driver.execute(Args patch(i, Nil, 2), () => new ustcrv.nexys4ddr.MainWithClock(freq))
   } else {
-    Driver.execute(Args, () => new ustcrv.nexys4ddr.Main)
+    Driver.execute(Args, () => new ustcrv.nexys4ddr.MainWithClock(25000000)) // Default to 25 MHz
   }
 }
