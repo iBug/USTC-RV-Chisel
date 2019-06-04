@@ -1,4 +1,6 @@
 #include "string.h"
+#include "stdio.h"
+#include "io.h"
 
 char *memset(char *b, int c, size_t len) {
 	char *ret = b;
@@ -15,4 +17,9 @@ char *memcpy(char *restrict dst, const char *restrict src, size_t n) {
 	}
 
 	return ret;
+}
+
+int putchar(int c) {
+	io.vga_outchar = c;
+	return c;
 }

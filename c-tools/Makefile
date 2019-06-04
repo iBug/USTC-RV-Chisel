@@ -16,8 +16,8 @@ ODFLAGS = -d
 MEMSIZE = 4096
 
 PROJ = riscv
-OBJS = init.o prog.o helper.o std.o
-ASMS = prog.s helper.s std.s
+OBJS = init.o prog.o helper.o std.o io.o
+ASMS = prog.s helper.s std.s io.s
 
 all: $(PROJ).imem $(PROJ).dmem
 
