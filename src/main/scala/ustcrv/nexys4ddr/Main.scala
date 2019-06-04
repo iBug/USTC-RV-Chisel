@@ -5,12 +5,14 @@ import chisel3.util._
 
 import ustcrv.core.{Debug, Package}
 import ustcrv.util._
+import ustcrv.nexys4ddr
 
 class MainIO extends Bundle {
   val seg = new SegmentOutput
   val SW = Input(UInt(16.W))
   val LED = Output(UInt(16.W))
   //val data = Output(UInt(32.W)) // For debugging
+  val vga = new nexys4ddr.vga.VGADisplay
 }
 
 class MainWithClock(val freq: BigInt = 100000000) extends Module {
@@ -43,6 +45,14 @@ class Main(val freq: BigInt = 100000000) extends Module {
   val dDataIn = WireInit(0.U(32.W))
   val dDataOut = WireInit(debug.dDataOut)
   //io.data := dispData // For debugging
+
+  // TODO: Tidy up DMem and memory-mapped I/O devices, implement a unified memory interface
+  val vga = Module(new nexys4ddr.vga.VGA).io
+  io.vga <> vga.out
+  vga.in.enable := debug.mEnable
+  debug.mDataR := 0.U(32.W)
+  vga.in.dataW := debug.mDataW
+  vga.in.memRW := debug.mMode
 
   io.LED := (1.U << state)
   seg.numA := Mux(io.SW(15), dispData(31, 16), dispAddr(15, 0))

@@ -14,6 +14,13 @@ class PackageIO extends Bundle {
 
   // Ports deprived from debugger
   val pcEnable = Input(Bool())
+
+  // Memory-mapped I/O interface
+  val mEnable = Output(Bool())
+  val mAddr = Output(UInt(32 W))
+  val mDataR = Input(UInt(32 W))
+  val mDataW = Output(UInt(32 W))
+  val mMode = Output(Bool()) // 0-read, 1-write
 }
 
 class Package extends Module {
@@ -59,4 +66,11 @@ class Package extends Module {
   dmem.memRW := core.dmemWE
   dmem.length := core.dmemL
   dmem.sign := core.dmemS
+
+  // Memmap
+  io.mEnable := core.dmemA >= 0x2000.U // I/O mapping range
+  io.mAddr := core.dmemA
+  //io.mDataR ???
+  io.mDataW := core.dmemDR
+  io.mMode := core.dmemWE
 }
