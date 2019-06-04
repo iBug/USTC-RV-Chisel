@@ -3,17 +3,17 @@ package ustcrv.nexys4ddr.vga
 import chisel3._
 import chisel3.util.log2Ceil
 
-class BlockRAM(val wData: Int, val depth: Int) extends Module {
+class BlockRAM(val width: Int, val depth: Int) extends Module {
   val io = IO(new Bundle {
     val wAddr = Input(UInt(log2Ceil(depth)W))
-    val wData = Input(UInt(wData.W))
+    val wData = Input(UInt(width.W))
     val wEnable = Input(Bool())
 
     val rAddr = Input(UInt(log2Ceil(depth)W))
-    val rData = Output(UInt(wData.W))
+    val rData = Output(UInt(width.W))
   })
 
-  val core = Module(new BlockRAM_IP(wData, depth)).io
+  val core = Module(new BlockRAM_IP(width, depth)).io
   // TODO: Connect wires
   core.clka := clock
   core.clkb := clock
@@ -26,17 +26,17 @@ class BlockRAM(val wData: Int, val depth: Int) extends Module {
   core.doutb <> io.rData
 }
 
-class BlockRAM_IP(val wData: Int, val depth: Int) extends BlackBox {
+class BlockRAM_IP(val width: Int, val depth: Int) extends BlackBox {
   val io = IO(new Bundle {
     val clka = Input(Clock())
     val addra = Input(UInt(log2Ceil(depth)W))
-    val dina = Input(UInt(wData.W))
+    val dina = Input(UInt(width.W))
     val ena = Input(Bool())
     val wea = Input(Bool())
 
     val clkb = Input(Clock())
     val addrb = Input(UInt(log2Ceil(depth)W))
-    val doutb = Output(UInt(wData.W))
+    val doutb = Output(UInt(width.W))
     val enb = Input(Bool())
   })
 }

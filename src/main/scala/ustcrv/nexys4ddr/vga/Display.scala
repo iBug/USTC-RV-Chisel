@@ -11,7 +11,7 @@ class Display extends Module {
     val rData = Input(UInt(8.W))
   })
 
-  val scanner = Module(new Scanner)io
+  val scanner = Module(new Scanner).io
   io.out.VGA_HS := scanner.hs
   io.out.VGA_VS := scanner.vs
 

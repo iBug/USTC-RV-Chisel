@@ -8,5 +8,5 @@ object OptionalPort {
 }
 
 object PosEdge {
-  def apply(signal: Bool, n: Int): Bool = signal && !ShiftRegister(signal, n)
+  def apply(signal: Bool, n: Int = 1): Bool = signal && !ShiftRegister(signal, n)
 }

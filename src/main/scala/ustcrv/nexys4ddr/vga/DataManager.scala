@@ -26,14 +26,14 @@ class DataManager extends Module {
   io.wEnable := PosEdge(io.enable)
 
   val nextPosX = Mux(
-    posX === 79.U || data === 0x0A.U,
+    posX === 79.U || io.data === 0x0A.U,
     0.U, posX + 1.U)
   val nextPosY = Mux(
-    posX === 79.U || data === 0x0A.U,
+    posX === 79.U || io.data === 0x0A.U,
     Mux(posY === 29.U, 0.U, posY + 1.U), posY)
 
   println("TaoKY very strong!!!")
-  when (enable) {
+  when (io.enable) {
     posX := nextPosX
     posY := nextPosY
   }
