@@ -19,8 +19,8 @@ class Scanner(val hd: Int = 640, val hf: Int = 16, val hs: Int = 96, val hb: Int
   val PE = RegNext(CDNext(cw))
   CD := CDNext(cw - 1, 0)
 
-  val hm = hd + hf + hs + hb
-  val vm = vd + vf + vs + vb
+  val hm = (hd + hf + hs + hb - 1)U
+  val vm = (vd + vf + vs + vb - 1)U
 
   io.en := (HD < hd.U) && (VD < vd.U)
   io.x := Mux(io.en, HD, 0.U)
@@ -29,9 +29,9 @@ class Scanner(val hd: Int = 640, val hf: Int = 16, val hs: Int = 96, val hb: Int
   io.vs := ~((VD >= (vd + vf).U) && (VD < (vd + vf + vs).U))
 
   when (PE) {
-    when (HD >= (hm - 1).U) {
+    when (HD >= hm) {
       HD := 0.U
-      when (VD >= (vm - 1).U) {
+      when (VD >= vm) {
         VD := 0.U
       } .otherwise {
         VD := VD + 1.U
