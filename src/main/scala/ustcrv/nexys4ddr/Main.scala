@@ -49,7 +49,7 @@ class Main(val freq: BigInt = 100000000) extends Module {
   // TODO: Tidy up DMem and memory-mapped I/O devices, implement a unified memory interface
   val vga = Module(new nexys4ddr.vga.VGA).io
   io.vga <> vga.out
-  vga.in.enable := debug.mEnable
+  vga.in.enable := debug.mAddr === 0x2000.U
   debug.mDataR := 0.U(32.W)
   vga.in.dataW := debug.mDataW
   vga.in.memRW := debug.mMode

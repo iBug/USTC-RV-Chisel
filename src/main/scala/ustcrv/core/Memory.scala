@@ -77,10 +77,10 @@ class DMem(val size: Int = 1024, val offset: Int = 0, val debug: Boolean = false
       mem.write(addr, dataW, mask.asBools)
     } .otherwise { // Read
       val data = mem.read(addr).asUInt
-      val sb = Wire(SInt(32.W))
-      val sh = Wire(SInt(32.W))
-      val ub = Wire(UInt(32.W))
-      val uh = Wire(UInt(32.W))
+      val sb = WireInit(0.S(32.W))
+      val sh = WireInit(0.S(32.W))
+      val ub = WireInit(0.U(32.W))
+      val uh = WireInit(0.U(32.W))
       val sw = subword << 3.U // sw = shift width
       sb := (data >> sw)(7, 0).asSInt
       sh := (Cat(data, data) >> sw)(15, 0).asSInt

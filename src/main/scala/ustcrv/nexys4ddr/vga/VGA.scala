@@ -24,15 +24,15 @@ class VGA extends Module {
     val out = new VGADisplay
   })
 
-  val scanner = Module(new Scanner) io
+  val scanner = withClockAndReset (clock, false.B) { Module(new Scanner) } io
   val dm = Module(new DataManager) io
-  val display = Module(new Display) io
+  val display = withClockAndReset (clock, false.B) { Module(new Display) } io
   val vram = Module(new BlockRAM(8, 2400)) io
 
   vram.wAddr := dm.wAddr
   vram.wData := dm.wData
   vram.wEnable := dm.wEnable
-  dm.enable := io.in.memRW
+  dm.enable := io.in.enable && io.in.memRW
   dm.data := io.in.dataW
   io.in.dataR := 0.U(32.W) // Nothing to read as of now
 
