@@ -61,7 +61,7 @@ class Package extends Module {
   // Core and Memory
   imem.in := core.imemIn
   core.imemOut := imem.out
-  dmem.enable := true.B
+  dmem.enable := core.dmemA >= 0x1000.U && core.dmemA < 0x2000.U
   dmem.addr := core.dmemA
   core.dmemDR := dmem.dataR
   dmem.dataW := core.dmemDW
