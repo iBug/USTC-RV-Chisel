@@ -88,13 +88,21 @@ class PackageTester(val c: Package) extends PeekPokeTester(c) {
   debugStep
   println("CPU start")
   poke(c.io.pcEnable, true)
-  step(2000)
+  for (n <- 0 until 2000) {
+    step(1)
+    if (peek(c.io.mEnable) != 0 && peek(c.io.mMode) != 0 && peek(c.io.mAddr) == 0x2000) {
+      val addr = peek(c.io.mAddr)
+      val data = peek(c.io.mDataW)
+      val pc = peek(c.io.pcValue)
+      System.out.printf(f"Write at 0x${pc}%X: 0x${addr}%X: (${data toChar}%c) ${data}%d\n")
+    }
+  }
   poke(c.io.pcEnable, false)
   println("CPU stop")
 
   // Check DMem stuff
   poke(c.io.dControl, Debug.DMEMRA)
-  poke(c.io.dDataIn, 0x1000)
+  poke(c.io.dDataIn, 0x1018)
   debugStep
   poke(c.io.dControl, Debug.DMEMRD)
   for (i <- 0 until 20) {

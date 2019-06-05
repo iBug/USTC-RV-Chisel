@@ -14,6 +14,7 @@ class PackageIO extends Bundle {
 
   // Ports deprived from debugger
   val pcEnable = Input(Bool())
+  val pcValue = Output(UInt(32.W))
 
   // Memory-mapped I/O interface
   val mEnable = Output(Bool())
@@ -42,6 +43,7 @@ class Package extends Module {
   core.pcReset := debugger.pcReset
   core.pcStep := debugger.pcStep
   debugger.pcValue := core.pcValue
+  io.pcValue := debugger.pcValue
 
   // Mem for debugger
   imem.dMode := debugger.idMode
@@ -59,7 +61,7 @@ class Package extends Module {
   // Core and Memory
   imem.in := core.imemIn
   core.imemOut := imem.out
-  dmem.enable := true.B
+  dmem.enable := core.dmemA >= 0x1000.U && core.dmemA < 0x2000.U
   dmem.addr := core.dmemA
   core.dmemDR := dmem.dataR
   dmem.dataW := core.dmemDW

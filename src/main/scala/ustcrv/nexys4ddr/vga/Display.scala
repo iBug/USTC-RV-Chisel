@@ -17,12 +17,13 @@ class Display extends Module {
 
   val pixel = Wire(Bool())
   val outputPixel = Mux(scanner.en, pixel, false.B)
-  val outputSignal = Cat(outputPixel, outputPixel, outputPixel, outputPixel)
+  val outputSignal = Fill(4, outputPixel)
   io.out.VGA_R := outputSignal
   io.out.VGA_G := outputSignal
   io.out.VGA_B := outputSignal
 
-  io.rAddr := 80.U * (scanner.y >> 4.U) + (scanner.x >> 3.U)
+  // Block RAM has a 1-clock delay
+  io.rAddr := 80.U * (scanner.ynext >> 4.U) + (scanner.xnext >> 3.U)
   val charmap = Charmap(io.rData)
-  pixel := charmap(scanner.y(3, 0))(scanner.x(2, 0))
+  pixel := charmap(scanner.y(3, 0))((scanner.x + 7.U)(2, 0))
 }

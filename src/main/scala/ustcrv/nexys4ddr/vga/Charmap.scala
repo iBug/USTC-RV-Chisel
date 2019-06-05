@@ -25,5 +25,5 @@ class Charmap extends Module {
       )) toList
   val rom = VecInit(data)
   val zero = VecInit(List.fill(16)(0.U(8.W)))
-  io.out := Mux(io.in < 0x20.U || io.in >= 0x7F.U, zero, rom(0x20.U + io.in))
+  io.out := Mux(io.in < 0x20.U || io.in >= 0x7F.U, zero, rom(io.in - 0x20.U))
 }
