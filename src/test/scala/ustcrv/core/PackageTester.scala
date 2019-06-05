@@ -90,7 +90,7 @@ class PackageTester(val c: Package) extends PeekPokeTester(c) {
   poke(c.io.pcEnable, true)
   for (n <- 0 until 2000) {
     step(1)
-    if (peek(c.io.mEnable) != 0 && peek(c.io.mMode) != 0) {
+    if (peek(c.io.mEnable) != 0 && peek(c.io.mMode) != 0 && peek(c.io.mAddr) == 0x2000) {
       val addr = peek(c.io.mAddr)
       val data = peek(c.io.mDataW)
       val pc = peek(c.io.pcValue)
