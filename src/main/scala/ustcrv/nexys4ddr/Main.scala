@@ -17,8 +17,8 @@ class MainIO extends Bundle {
 
 class MainWithClock(val freq: BigInt = 100000000) extends Module {
   val io = IO(new MainIO)
-  val main = withClockAndReset (CPUClock(clock), reset) { Module(new Main(freq)) }.io
-  io <> main
+  val main = withClockAndReset (CPUClock(clock), reset) { Module(new Main(freq)) }
+  io <> main.io
 }
 
 class Main(val freq: BigInt = 100000000) extends Module {

@@ -14,4 +14,8 @@ object Main extends App {
   } else {
     Driver.execute(Args, () => new ustcrv.nexys4ddr.MainWithClock(25000000)) // Default to 25 MHz
   }
+
+  // IMemROMData and DMemROMData are separate files now
+  Driver.execute(Args, () => new ustcrv.nexys4ddr.romdata.IMemROM)
+  Driver.execute(Args, () => new ustcrv.nexys4ddr.romdata.DMemROM)
 }
