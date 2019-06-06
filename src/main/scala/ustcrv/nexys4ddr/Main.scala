@@ -134,7 +134,7 @@ class Main(val freq: BigInt = 100000000) extends Module {
     dDataIn := imem.data
     when (!dEnable) {
       dEnable := true.B
-      when (romAddr === imem.d.U) {
+      when (romAddr === 0.U + imem.length) {
         romAddr := 0x1000.U
         state := 14.U // Go write DMem address
       } .otherwise {
@@ -162,7 +162,7 @@ class Main(val freq: BigInt = 100000000) extends Module {
     dDataIn := dmem.data
     when (!dEnable) {
       dEnable := true.B
-      when (romAddr === (0x1000 + dmem.d).U) { // Less DMem data to write
+      when (romAddr === 0x1000.U + dmem.length) { // Less DMem data to write
         romAddr := 0.U
         state := 0.U // Normal
       } .otherwise {
