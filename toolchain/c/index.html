@@ -144,114 +144,49 @@
               <p>Hello world 程序通常被认为是最简单的样例程序。</p>
               <div class="language-c highlighter-rouge">
                 <div class="highlight">
-                  <pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-</pre>
-                </td>
-                <td class="rouge-code">
-                  <pre><span class="cp">#include &lt;stdio.h&gt;
+                  <pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
 </span>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">printf</span><span class="p">(</span><span class="s">"Hello, world!</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
         <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
-</pre>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </code></pre>
-    </div>
-  </div>
-  <p>默认情况下，编译器会做怎样的处理呢？进行编译。</p>
-  <div class="highlighter-rouge">
-    <div class="highlight">
-      <pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre>
-    </td>
-    <td class="rouge-code">
-      <pre>$RISCV/bin/riscv32-unknown-elf-gcc -march=rv32i helloworld.c
-</pre>
-    </td>
-  </tr>
-</tbody>
-</table>
 </code></pre>
-</div>
-</div>
-<p>反汇编。</p>
-<div class="highlighter-rouge">
-  <div class="highlight">
-    <pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre>
-  </td>
-  <td class="rouge-code">
-    <pre>$RISCV/bin/riscv32-unknown-elf-objdump -d a.out
-</pre>
-  </td>
-</tr>
-</tbody>
-</table>
+                </div>
+              </div>
+              <p>默认情况下，编译器会做怎样的处理呢？进行编译。</p>
+              <div class="highlighter-rouge">
+                <div class="highlight">
+                  <pre class="highlight"><code>$RISCV/bin/riscv32-unknown-elf-gcc -march=rv32i helloworld.c
 </code></pre>
-</div>
-</div>
-<p>观察生成的结果可以发现：</p>
-<ul>
-  <li>默认情况下，编译器把整个 C 库（newlib）都塞到了编译的程序中（就算根本没有用到）</li>
-  <li>C 库带来了一些不属于 RV32I 指令集的指令（比如说 <code class="highlighter-rouge">div</code>）</li>
-  <li>并且对于我们的项目来说，它的 <code class="highlighter-rouge">printf()</code> 会把数据输出到哪里去呢？这里需要我们自己处理。</li>
-</ul>
-<p>如果需要模拟执行我们的程序，一种办法是使用 <code class="highlighter-rouge">spike</code>（<a href="https://github.com/riscv/riscv-isa-sim/">https://github.com/riscv/riscv-isa-sim/</a>）。</p>
-<div class="highlighter-rouge">
-  <div class="highlight">
-    <pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-</pre>
-  </td>
-  <td class="rouge-code">
-    <pre>$ $RISCV/bin/spike -m128 pk a.out
+                </div>
+              </div>
+              <p>反汇编。</p>
+              <div class="highlighter-rouge">
+                <div class="highlight">
+                  <pre class="highlight"><code>$RISCV/bin/riscv32-unknown-elf-objdump -d a.out
+</code></pre>
+                </div>
+              </div>
+              <p>观察生成的结果可以发现：</p>
+              <ul>
+                <li>默认情况下，编译器把整个 C 库（newlib）都塞到了编译的程序中（就算根本没有用到）</li>
+                <li>C 库带来了一些不属于 RV32I 指令集的指令（比如说 <code class="highlighter-rouge">div</code>）</li>
+                <li>并且对于我们的项目来说，它的 <code class="highlighter-rouge">printf()</code> 会把数据输出到哪里去呢？这里需要我们自己处理。</li>
+              </ul>
+              <p>如果需要模拟执行我们的程序，一种办法是使用 <code class="highlighter-rouge">spike</code>（<a href="https://github.com/riscv/riscv-isa-sim/">https://github.com/riscv/riscv-isa-sim/</a>）。</p>
+              <div class="highlighter-rouge">
+                <div class="highlight">
+                  <pre class="highlight"><code>$ $RISCV/bin/spike -m128 pk a.out
 Hello, world!
-</pre>
-  </td>
-</tr>
-</tbody>
-</table>
 </code></pre>
-</div>
-</div>
-<p><code class="highlighter-rouge">-m128</code> 参数指定了占用的内存大小。<code class="highlighter-rouge">spike</code> 默认占用 2GB 的内存，如果内存大小不足，启动会出错。而 <code class="highlighter-rouge">pk</code> 是 <a href="https://github.com/riscv/riscv-pk">https://github.com/riscv/riscv-pk</a>，一个轻量级的，可运行静态链接的 RISCV ELF 应用程序的环境（Proxy Kernel）。</p>
-<p>如果不想要链接 C 库，需要参数 <code class="highlighter-rouge">-nostdlib</code>。</p>
-<p>现在，我们以下面这个程序作为示例。</p>
-<div class="highlighter-rouge">
-  <div class="highlight">
-    <pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-</pre>
-  </td>
-  <td class="rouge-code">
-    <pre>int global_init_var = 23;
+                </div>
+              </div>
+              <p><code class="highlighter-rouge">-m128</code> 参数指定了占用的内存大小。<code class="highlighter-rouge">spike</code> 默认占用 2GB 的内存，如果内存大小不足，启动会出错。而 <code class="highlighter-rouge">pk</code> 是 <a href="https://github.com/riscv/riscv-pk">https://github.com/riscv/riscv-pk</a>，一个轻量级的，可运行静态链接的 RISCV ELF 应用程序的环境（Proxy Kernel）。</p>
+              <p>如果不想要链接 C 库，需要参数 <code class="highlighter-rouge">-nostdlib</code>。</p>
+              <p>现在，我们以下面这个程序作为示例。</p>
+              <div class="highlighter-rouge">
+                <div class="highlight">
+                  <pre class="highlight"><code>int global_init_var = 23;
 int global_array[32];
 
 int func1(int i)
@@ -271,66 +206,13 @@ int main(void)
 
         return a;
 }
-</pre>
-  </td>
-</tr>
-</tbody>
-</table>
 </code></pre>
-</div>
-</div>
-<p>编译时由于没有了 C 库，会出现没有入口点的警告。我们将 <code class="highlighter-rouge">main()</code> 改名为 <code class="highlighter-rouge">_start()</code>。观察生成的可执行文件。</p>
-<div class="highlighter-rouge">
-  <div class="highlight">
-    <pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-</pre>
-  </td>
-  <td class="rouge-code">
-    <pre>00010074 &lt;func1&gt;:
+                </div>
+              </div>
+              <p>编译时由于没有了 C 库，会出现没有入口点的警告。我们将 <code class="highlighter-rouge">main()</code> 改名为 <code class="highlighter-rouge">_start()</code>。观察生成的可执行文件。</p>
+              <div class="highlighter-rouge">
+                <div class="highlight">
+                  <pre class="highlight"><code>00010074 &lt;func1&gt;:
    10074:       fe010113                addi    sp,sp,-32
    10078:       00812e23                sw      s0,28(sp)
    1007c:       02010413                addi    s0,sp,32
@@ -375,61 +257,22 @@ int main(void)
    10110:       11812403                lw      s0,280(sp)
    10114:       12010113                addi    sp,sp,288
    10118:       00008067                ret
-</pre>
-  </td>
-</tr>
-</tbody>
-</table>
 </code></pre>
-</div>
-</div>
-<p>可以看到：</p>
-<ul>
-  <li><code class="highlighter-rouge">sp</code> 被用作栈指针——我们可能需要初始化栈指针到合适的内存位置。</li>
-  <li>尽管程序中有全局变量，<code class="highlighter-rouge">gp</code> 寄存器没有被使用。</li>
-  <li>没有使用 <code class="highlighter-rouge">fp</code> (frame pointer)，由于寄存器很多，使用 frame pointer 确实没有太大的必要。</li>
-  <li>没有 <code class="highlighter-rouge">fence</code> 与控制寄存器相关部分。</li>
-</ul>
-<h2 id="定制c-工具链以-darkriscv-为例">「定制」C 工具链：以 darkriscv 为例</h2>
-<p>在我们最终的架构中，需要将指令和数据放在不同的地方（哈佛架构），需要自己定义一套地址空间。可以使用链接脚本解决这个问题。</p>
-<p>参考 darkriscv 的链接脚本：</p>
-<div class="highlighter-rouge">
-  <div class="highlight">
-    <pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-</pre>
-  </td>
-  <td class="rouge-code">
-    <pre>MEMORY
+                </div>
+              </div>
+              <p>可以看到：</p>
+              <ul>
+                <li><code class="highlighter-rouge">sp</code> 被用作栈指针——我们可能需要初始化栈指针到合适的内存位置。</li>
+                <li>尽管程序中有全局变量，<code class="highlighter-rouge">gp</code> 寄存器没有被使用。</li>
+                <li>没有使用 <code class="highlighter-rouge">fp</code> (frame pointer)，由于寄存器很多，使用 frame pointer 确实没有太大的必要。</li>
+                <li>没有 <code class="highlighter-rouge">fence</code> 与控制寄存器相关部分。</li>
+              </ul>
+              <h2 id="定制c-工具链以-darkriscv-为例">「定制」C 工具链：以 darkriscv 为例</h2>
+              <p>在我们最终的架构中，需要将指令和数据放在不同的地方（哈佛架构），需要自己定义一套地址空间。可以使用链接脚本解决这个问题。</p>
+              <p>参考 darkriscv 的链接脚本：</p>
+              <div class="highlighter-rouge">
+                <div class="highlight">
+                  <pre class="highlight"><code>MEMORY
 {
     ROM (x!rw) : ORIGIN = 0x00000000, LENGTH = 0x1000
     RAM (rw!x) : ORIGIN = 0x00001000, LENGTH = 0x1000
@@ -460,56 +303,28 @@ SECTIONS
 
     } &gt; IO
 }
-</pre>
-  </td>
-</tr>
-</tbody>
-</table>
 </code></pre>
-</div>
-</div>
-<blockquote>
-  <p>In both cases, a proper designed linker script (darksocv.ld) probably solves the problem!</p>
-  <p>The current memory map in the linker script is the follow:</p>
-  <ul>
-    <li>0x00000000: 4KB ROM</li>
-    <li>0x00001000: 4KB RAM</li>
-  </ul>
-  <p>Also, the linker maps the IO in the following positions:</p>
-  <ul>
-    <li>0x80000000: UART status</li>
-    <li>0x80000004: UART xmit/recv buffer</li>
-    <li>0x80000008: LED buffer</li>
-  </ul>
-  <p>The RAM memory contains the .data area, the .bss area (after the .data and initialized with zero), the .rodada and the stack area at the end of RAM.</p>
-</blockquote>
-<p>可以看到，程序的 <code class="highlighter-rouge">.text</code> 段接在 <code class="highlighter-rouge">boot.o</code>（用作初始化环境）后面放在了 ROM 区域，<code class="highlighter-rouge">.data</code>, <code class="highlighter-rouge">.bss</code> 等段则放在 RAM 区域，IO 则由 <code class="highlighter-rouge">io.o</code> 处理。此外由于不使用默认的 newlib C 库，darkriscv 自己实现了一些 C 函数，在 <code class="highlighter-rouge">stdio.c</code> 中。下面是通过调用定义的 IO 实现字符输入/输出的「标准库」代码。</p>
-<div class="language-c highlighter-rouge">
-  <div class="highlight">
-    <pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-</pre>
-  </td>
-  <td class="rouge-code">
-    <pre><span class="c1">// putchar and getchar uses the "low-level" io</span>
+                </div>
+              </div>
+              <blockquote>
+                <p>In both cases, a proper designed linker script (darksocv.ld) probably solves the problem!</p>
+                <p>The current memory map in the linker script is the follow:</p>
+                <ul>
+                  <li>0x00000000: 4KB ROM</li>
+                  <li>0x00001000: 4KB RAM</li>
+                </ul>
+                <p>Also, the linker maps the IO in the following positions:</p>
+                <ul>
+                  <li>0x80000000: UART status</li>
+                  <li>0x80000004: UART xmit/recv buffer</li>
+                  <li>0x80000008: LED buffer</li>
+                </ul>
+                <p>The RAM memory contains the .data area, the .bss area (after the .data and initialized with zero), the .rodada and the stack area at the end of RAM.</p>
+              </blockquote>
+              <p>可以看到，程序的 <code class="highlighter-rouge">.text</code> 段接在 <code class="highlighter-rouge">boot.o</code>（用作初始化环境）后面放在了 ROM 区域，<code class="highlighter-rouge">.data</code>, <code class="highlighter-rouge">.bss</code> 等段则放在 RAM 区域，IO 则由 <code class="highlighter-rouge">io.o</code> 处理。此外由于不使用默认的 newlib C 库，darkriscv 自己实现了一些 C 函数，在 <code class="highlighter-rouge">stdio.c</code> 中。下面是通过调用定义的 IO 实现字符输入/输出的「标准库」代码。</p>
+              <div class="language-c highlighter-rouge">
+                <div class="highlight">
+                  <pre class="highlight"><code><span class="c1">// putchar and getchar uses the "low-level" io</span>
 
 <span class="kt">int</span> <span class="nf">getchar</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
@@ -529,108 +344,103 @@ SECTIONS
   <span class="k">while</span><span class="p">(</span><span class="n">io</span><span class="p">.</span><span class="n">uart</span><span class="p">.</span><span class="n">stat</span><span class="o">&amp;</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// uart busy, wait...</span>
   <span class="k">return</span> <span class="n">io</span><span class="p">.</span><span class="n">uart</span><span class="p">.</span><span class="n">fifo</span> <span class="o">=</span> <span class="n">c</span><span class="p">;</span>
 <span class="p">}</span>
-</pre>
-  </td>
-</tr>
-</tbody>
-</table>
 </code></pre>
-</div>
-</div>
-<p>最终，通过一个 Makefile 调用 <code class="highlighter-rouge">objcopy</code> 等程序，可以生成对应 ROM 和 RAM 文件，这些文件可以进一步转换为方便使用的格式，如 COE 等。</p>
-</section>
-<footer class="page__meta">
-</footer>
-</div>
-</article>
-</div>
-</div>
-<div class="search-content">
-  <div class="search-content__inner-wrap">
-    <div class="search-searchbar"></div>
-    <div class="search-hits"></div>
-  </div>
-</div>
-<div id="footer" class="page__footer">
-  <footer>
-    <!-- start custom footer snippets -->
-    <!-- end custom footer snippets -->
-    <div class="page__footer-follow">
-      <ul class="social-icons">
-        <li><strong>关注:</strong></li>
-        <li><a href="https://github.com/iBug/USTC-RV-Chisel" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
-        <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
-      </ul>
-    </div>
-    <div class="page__footer-copyright">&copy; 2019 USTC Chisel RISC-V 项目小组. 技术来自于 <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
-  </footer>
-</div>
-<script src="/assets/js/main.min.js"></script>
-<script src="https://kit.fontawesome.com/4eee35f757.js"></script>
-<!-- Including InstantSearch.js library and styling -->
-<script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch-theme-algolia.min.css">
-<script>
-  // Instanciating InstantSearch.js with Algolia credentials
-  const search = instantsearch({
-    appId: 'CM5ZKX0CV3',
-    apiKey: 'aa942e5bdda7368300e322cba95f47f6',
-    indexName: 'RISC-V Homepage',
-    searchParameters: {
-      restrictSearchableAttributes: [
-        'title',
-        'content'
-      ]
-    }
-  });
-  
-  const hitTemplate = function(hit) {
-    const url = hit.url;
-    const title = hit._highlightResult.title.value;
-    const content = hit._highlightResult.html.value;
-  
-    return `
-      <div class="list__item">
-        <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
-          <h2 class="archive__item-title" itemprop="headline"><a href="${url}">${title}</a></h2>
-          <div class="archive__item-excerpt" itemprop="description">${content}</div>
+                </div>
+              </div>
+              <p>最终，通过一个 Makefile 调用 <code class="highlighter-rouge">objcopy</code> 等程序，可以生成对应 ROM 和 RAM 文件，这些文件可以进一步转换为方便使用的格式，如 COE 等。</p>
+            </section>
+            <footer class="page__meta">
+            </footer>
+          </div>
         </article>
       </div>
-    `;
-  }
-  
-  // Adding searchbar and results widgets
-  search.addWidget(
-    instantsearch.widgets.searchBox({
-      container: '.search-searchbar',
-      poweredBy: true,
-      placeholder: '输入您要搜索的关键词...'
-    })
-  );
-  search.addWidget(
-    instantsearch.widgets.hits({
-      container: '.search-hits',
-      templates: {
-        item: hitTemplate
+    </div>
+    <div class="search-content">
+      <div class="search-content__inner-wrap">
+        <div class="search-searchbar"></div>
+        <div class="search-hits"></div>
+      </div>
+    </div>
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+        <!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+          <ul class="social-icons">
+            <li><strong>关注:</strong></li>
+            <li><a href="https://github.com/iBug/USTC-RV-Chisel" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+            <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+          </ul>
+        </div>
+        <div class="page__footer-copyright">&copy; 2019 USTC Chisel RISC-V 项目小组. 技术来自于 <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+      </footer>
+    </div>
+    <script src="/assets/js/main.min.js"></script>
+    <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+    <!-- Including InstantSearch.js library and styling -->
+    <script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch-theme-algolia.min.css">
+    <script>
+      // Instanciating InstantSearch.js with Algolia credentials
+      const search = instantsearch({
+        appId: 'CM5ZKX0CV3',
+        apiKey: 'aa942e5bdda7368300e322cba95f47f6',
+        indexName: 'RISC-V Homepage',
+        searchParameters: {
+          restrictSearchableAttributes: [
+            'title',
+            'content'
+          ]
+        }
+      });
+      
+      const hitTemplate = function(hit) {
+        const url = hit.url;
+        const title = hit._highlightResult.title.value;
+        const content = hit._highlightResult.html.value;
+      
+        return `
+          <div class="list__item">
+            <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+              <h2 class="archive__item-title" itemprop="headline"><a href="${url}">${title}</a></h2>
+              <div class="archive__item-excerpt" itemprop="description">${content}</div>
+            </article>
+          </div>
+        `;
       }
-    })
-  );
-  
-  // Starting the search
-  search.start();
-</script>
-<script>
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-115907213-2']);
-  
-  _gaq.push(['_trackPageview']);
-  
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-</script>
-</body>
+      
+      // Adding searchbar and results widgets
+      search.addWidget(
+        instantsearch.widgets.searchBox({
+          container: '.search-searchbar',
+          poweredBy: true,
+          placeholder: '输入您要搜索的关键词...'
+        })
+      );
+      search.addWidget(
+        instantsearch.widgets.hits({
+          container: '.search-hits',
+          templates: {
+            item: hitTemplate
+          }
+        })
+      );
+      
+      // Starting the search
+      search.start();
+    </script>
+    <script>
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-115907213-2']);
+      
+      _gaq.push(['_trackPageview']);
+      
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
 </html>
