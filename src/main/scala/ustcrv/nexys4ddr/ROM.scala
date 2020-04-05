@@ -2,7 +2,7 @@ package ustcrv.nexys4ddr
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.MultiIOModule
+import chisel3.MultiIOModule
 
 import scala.io.Source
 
