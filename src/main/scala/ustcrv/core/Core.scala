@@ -28,51 +28,76 @@ class Core extends Module {
   val regFile = Module(new RegisterFile(32, 5)).io
   val branchComp = Module(new BranchComp(32)).io
   val immGen = Module(new ImmGen).io
-  val pc = withClockAndReset (clock, reset.asBool | io.pcReset) {
-    Module(new PC)
-  }.io
 
   val step = io.pcStep && RegNext(io.pcStep)
-
-  val inst = io.imemOut
-  control.inst := inst
 
   // Wires
   val wb = Wire(UInt(32.W))
 
+  // Pipeline registers
+  val fe_inst = RegInit(Instructions.NOP)
+  val fe_pc = Reg(UInt())
+
+  val de_control = Reg(Control.controlSignals)
+  val de_regFile_dataA = Reg(UInt())
+  val de_regFile_dataB = Reg(UInt())
+  val de_pc = Reg(UInt())
+  val de_immGen = Reg(UInt())
+
+  val em_alu = Reg(UInt())
+
   // CS61c slide p.48, left to right, with mods
-  pc.sel := control.PCSel
+  // IF
+  val pc = withClockAndReset (clock, reset.asBool | io.pcReset) {
+    Module(new PC)
+  }.io
+  pc.sel := control.signals.PCSel
   pc.in := alu.out
   pc.en := io.enable | step
 
   io.imemIn := pc.out
   io.pcValue := pc.out
 
-  regFile.addrA := inst(19, 15)
-  regFile.addrB := inst(24, 20)
-  regFile.addrD := inst(11, 7)
-  regFile.dataD := wb
-  regFile.regWEn := control.RegWEn
+  fe_pc := pc.out
+  fe_inst := io.imemOut
 
-  immGen.in := inst
-  immGen.sel := control.ImmSel
+  // ID
+  regFile.addrA := fe_inst(19, 15)
+  regFile.addrB := fe_inst(24, 20)
+  regFile.addrD := fe_inst(11, 7)
+  regFile.dataD := wb
+  regFile.regWEn := control.signals.RegWEn
+
+  control.inst := fe_inst
+
+  immGen.in := fe_inst
+  immGen.sel := control.signals.ImmSel
 
   branchComp.a := regFile.dataA
   branchComp.b := regFile.dataB
-  branchComp.brType := control.BrType
+  branchComp.brType := control.signals.BrType
   control.BrTaken := branchComp.taken
 
-  alu.a := Mux(control.ASel, pc.out, regFile.dataA)
-  alu.b := Mux(control.BSel, immGen.out, regFile.dataB)
-  alu.sel := control.ALUSel
+  de_control := control.signals
+  de_immGen := immGen.out
+  de_pc := fe_pc
+  de_regFile_dataA := regFile.dataA
+  de_regFile_dataB := regFile.dataB
 
+  // EX
+  alu.a := Mux(de_control.ASel, de_pc, de_regFile_dataA)
+  alu.b := Mux(de_control.BSel, de_immGen, de_regFile_dataB)
+  alu.sel := de_control.ALUSel
+
+  // MEM
   io.dmemA := alu.out
   io.dmemDW := regFile.dataB
-  io.dmemWE := control.MemRW
-  io.dmemL := control.MemLength
-  io.dmemS := control.MemSign
+  io.dmemWE := control.signals.MemRW
+  io.dmemL := control.signals.MemLength
+  io.dmemS := control.signals.MemSign
 
-  wb := MuxLookup(control.WBSel, 0.U(32.W), Array(
+  // WB
+  wb := MuxLookup(control.signals.WBSel, 0.U(32.W), Array(
     Control.WB_DM -> io.dmemDR,
     Control.WB_ALU -> alu.out,
     Control.WB_PC4 -> (pc.out + 4.U)

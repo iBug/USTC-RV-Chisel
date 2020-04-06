@@ -6,21 +6,25 @@ import chisel3.util._
 import Instructions._
 import Branch._
 
+class ControlSignals extends Bundle {
+  val PCSel = Bool()  // 0: PC + 4, 1: From ALU
+  val ImmSel = UInt(3.W)  // 0: Immediate, 1: Store, 2: Branch, 3: Upper Immediate, 4: Jump
+  val RegWEn = Bool()  // Regfile Write Enable
+  val BrType = UInt(3.W)  // Which BrType?
+  val BSel = Bool()  // 0: rs2, 1: imm
+  val ASel = Bool()  // 0: rs1, 1: pc
+  val ALUSel = UInt(4.W)  // ALUop
+  val MemRW = Bool()  // Data Memory, 0: Read, 1: Write
+  val WBSel = UInt(2.W)  // For Write-back, 0: Data Memory, 1: ALU Result, 2: PC + 4
+  val MemLength = UInt(2.W)
+  val MemSign = UInt(1.W)
+}
+
 class ControlIO extends Bundle {
   val inst = Input(UInt(32.W))
   // according to https://inst.eecs.berkeley.edu/~cs61c/fa17/lec/11/L11_Datapath1%20(1up).pdf P48
-  val PCSel = Output(Bool())  // 0: PC + 4, 1: From ALU
-  val ImmSel = Output(UInt(3.W))  // 0: Immediate, 1: Store, 2: Branch, 3: Upper Immediate, 4: Jump
-  val RegWEn = Output(Bool())  // Regfile Write Enable
-  val BrType = Output(UInt(3.W))  // Which BrType?
   val BrTaken = Input(Bool())
-  val BSel = Output(Bool())  // 0: rs2, 1: imm
-  val ASel = Output(Bool())  // 0: rs1, 1: pc
-  val ALUSel = Output(UInt(4.W))  // ALUop
-  val MemRW = Output(Bool())  // Data Memory, 0: Read, 1: Write
-  val WBSel = Output(UInt(2.W))  // For Write-back, 0: Data Memory, 1: ALU Result, 2: PC + 4
-  val MemLength = Output(UInt(2.W))
-  val MemSign = Output(UInt(1.W))
+  val signals = Output(new ControlSignals)
 }
 
 object Control {
@@ -54,6 +58,8 @@ object Control {
 
   val MS_U = 0.U
   val MS_S = 1.U
+
+  val controlSignals = new ControlSignals
 }
 
 class Control extends Module {
@@ -109,15 +115,15 @@ class Control extends Module {
 
   val CtrlSignals = ListLookup(io.inst, default, map)
 
-  io.PCSel := Mux(io.BrTaken, PC_ALU, CtrlSignals(0))
-  io.ImmSel := CtrlSignals(1)
-  io.RegWEn := CtrlSignals(2)
-  io.BrType := CtrlSignals(3)
-  io.BSel := CtrlSignals(4)
-  io.ASel := CtrlSignals(5)
-  io.ALUSel := CtrlSignals(6)
-  io.MemRW := CtrlSignals(7)
-  io.WBSel := CtrlSignals(8)
-  io.MemLength := CtrlSignals(9)
-  io.MemSign := CtrlSignals(10)
+  io.signals.PCSel := Mux(io.BrTaken, PC_ALU, CtrlSignals(0))
+  io.signals.ImmSel := CtrlSignals(1)
+  io.signals.RegWEn := CtrlSignals(2)
+  io.signals.BrType := CtrlSignals(3)
+  io.signals.BSel := CtrlSignals(4)
+  io.signals.ASel := CtrlSignals(5)
+  io.signals.ALUSel := CtrlSignals(6)
+  io.signals.MemRW := CtrlSignals(7)
+  io.signals.WBSel := CtrlSignals(8)
+  io.signals.MemLength := CtrlSignals(9)
+  io.signals.MemSign := CtrlSignals(10)
 }
