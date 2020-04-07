@@ -45,6 +45,8 @@ class Core extends Module {
   val de_regFile_dataA = Reg(UInt())
   val de_regFile_dataB = Reg(UInt())
   val de_regFile_addrD = Reg(UInt())
+  val de_regFile_addrA = Reg(UInt())
+  val de_regFile_addrB = Reg(UInt())
   val de_pc = Reg(UInt())
   val de_immGen = Reg(UInt())
 
@@ -60,8 +62,30 @@ class Core extends Module {
   val mw_dmemDR = Reg(UInt())
   val mw_regFile_addrD = Reg(UInt())
 
-  fd_pc := pc.out
-  fd_inst := io.imemOut
+  when (de_control.PCSel === Control.PC_ALU) {
+    fd_pc := 0.U
+    fd_inst := Instructions.NOP
+    de_control := 0.U.asTypeOf(Control.controlSignals)
+    de_immGen := 0.U
+    de_pc := 0.U
+    de_regFile_dataA := 0.U
+    de_regFile_dataB := 0.U
+    de_regFile_addrD := 0.U
+    de_regFile_addrA := 0.U
+    de_regFile_addrB := 0.U
+  }.elsewhen (de_control.WBSel === Control.WB_DM && (de_regFile_addrD === regFile.addrA || de_regFile_addrD === regFile.addrB)) {
+    de_control := 0.U.asTypeOf(Control.controlSignals)
+    de_immGen := 0.U
+    de_pc := 0.U
+    de_regFile_dataA := 0.U
+    de_regFile_dataB := 0.U
+    de_regFile_addrD := 0.U
+    de_regFile_addrA := 0.U
+    de_regFile_addrB := 0.U
+  }.otherwise {
+    fd_pc := pc.out
+    fd_inst := io.imemOut
+  }
 
   de_control := control.signals
   de_immGen := immGen.out
@@ -69,6 +93,8 @@ class Core extends Module {
   de_regFile_dataA := regFile.dataA
   de_regFile_dataB := regFile.dataB
   de_regFile_addrD := fd_inst(11, 7)
+  de_regFile_addrA := regFile.addrA
+  de_regFile_addrB := regFile.addrB
 
   em_control := de_control
   em_alu := alu.out
@@ -84,11 +110,12 @@ class Core extends Module {
 
   // CS61c slide p.48, left to right, with mods
   // IF
-  pc.sel := control.signals.PCSel
+  pc.sel := de_control.PCSel
   pc.in := alu.out
   pc.en := io.enable | step
 
   io.imemIn := pc.out
+  io.pcValue := pc.out
 
   // ID
   regFile.addrA := fd_inst(19, 15)
@@ -107,10 +134,16 @@ class Core extends Module {
   branchComp.brType := control.signals.BrType
   control.BrTaken := branchComp.taken
 
-  io.pcValue := pc.out
-
   // EX
-  alu.a := Mux(de_control.ASel, de_pc, de_regFile_dataA)
+  val dataA = Wire(UInt())
+  val dataB = Wire(UInt())
+
+  dataA := Mux(em_regFile_addrD === de_regFile_addrA && de_regFile_addrA =/= 0.U, em_alu,
+    Mux(mw_regFile_addrD === de_regFile_addrA && de_regFile_addrA =/= 0.U, wb, de_regFile_dataA))
+  dataB := Mux(em_regFile_addrD === de_regFile_addrB && de_regFile_addrB =/= 0.U, em_alu,
+    Mux(mw_regFile_addrD === de_regFile_addrB && de_regFile_addrB =/= 0.U, wb, de_regFile_dataB))
+
+  alu.a := Mux(de_control.ASel, de_pc, dataA)
   alu.b := Mux(de_control.BSel, de_immGen, de_regFile_dataB)
   alu.sel := de_control.ALUSel
 
