@@ -1,0 +1,94 @@
+
+riscv.o:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	00002117          	auipc	sp,0x2
+   4:	00010113          	mv	sp,sp
+   8:	024000ef          	jal	ra,2c <main>
+
+0000000c <dead_loop>:
+   c:	0000006f          	j	c <dead_loop>
+
+Disassembly of section .text.square:
+
+00000010 <square>:
+  10:	ff010113          	addi	sp,sp,-16 # 1ff0 <io+0xf88>
+  14:	00112623          	sw	ra,12(sp)
+  18:	00050593          	mv	a1,a0
+  1c:	0c0000ef          	jal	ra,dc <__mulsi3>
+  20:	00c12083          	lw	ra,12(sp)
+  24:	01010113          	addi	sp,sp,16
+  28:	00008067          	ret
+
+Disassembly of section .text.main:
+
+0000002c <main>:
+  2c:	fa010113          	addi	sp,sp,-96
+  30:	04112e23          	sw	ra,92(sp)
+  34:	04812c23          	sw	s0,88(sp)
+  38:	00000413          	li	s0,0
+  3c:	0200006f          	j	5c <main+0x30>
+  40:	00040513          	mv	a0,s0
+  44:	fcdff0ef          	jal	ra,10 <square>
+  48:	00241793          	slli	a5,s0,0x2
+  4c:	05010713          	addi	a4,sp,80
+  50:	00f707b3          	add	a5,a4,a5
+  54:	faa7a823          	sw	a0,-80(a5)
+  58:	00140413          	addi	s0,s0,1
+  5c:	01300793          	li	a5,19
+  60:	fe87d0e3          	ble	s0,a5,40 <main+0x14>
+  64:	00010713          	mv	a4,sp
+  68:	000017b7          	lui	a5,0x1
+  6c:	01878793          	addi	a5,a5,24 # 1018 <global_array>
+  70:	05010693          	addi	a3,sp,80
+  74:	00072803          	lw	a6,0(a4)
+  78:	00472503          	lw	a0,4(a4)
+  7c:	00872583          	lw	a1,8(a4)
+  80:	00c72603          	lw	a2,12(a4)
+  84:	0107a023          	sw	a6,0(a5)
+  88:	00a7a223          	sw	a0,4(a5)
+  8c:	00b7a423          	sw	a1,8(a5)
+  90:	00c7a623          	sw	a2,12(a5)
+  94:	01070713          	addi	a4,a4,16
+  98:	01078793          	addi	a5,a5,16
+  9c:	fcd71ce3          	bne	a4,a3,74 <main+0x48>
+  a0:	00000413          	li	s0,0
+  a4:	01c0006f          	j	c0 <main+0x94>
+  a8:	000017b7          	lui	a5,0x1
+  ac:	00078793          	mv	a5,a5
+  b0:	008787b3          	add	a5,a5,s0
+  b4:	0007c503          	lbu	a0,0(a5) # 1000 <success>
+  b8:	050000ef          	jal	ra,108 <putchar>
+  bc:	00140413          	addi	s0,s0,1
+  c0:	01500793          	li	a5,21
+  c4:	fe87f2e3          	bleu	s0,a5,a8 <main+0x7c>
+  c8:	00000513          	li	a0,0
+  cc:	05c12083          	lw	ra,92(sp)
+  d0:	05812403          	lw	s0,88(sp)
+  d4:	06010113          	addi	sp,sp,96
+  d8:	00008067          	ret
+
+Disassembly of section .text.__mulsi3:
+
+000000dc <__mulsi3>:
+  dc:	00050793          	mv	a5,a0
+  e0:	00000513          	li	a0,0
+  e4:	0100006f          	j	f4 <__mulsi3+0x18>
+  e8:	0017d793          	srli	a5,a5,0x1
+  ec:	00159593          	slli	a1,a1,0x1
+  f0:	00078a63          	beqz	a5,104 <__mulsi3+0x28>
+  f4:	0017f713          	andi	a4,a5,1
+  f8:	fe0708e3          	beqz	a4,e8 <__mulsi3+0xc>
+  fc:	00b50533          	add	a0,a0,a1
+ 100:	fe9ff06f          	j	e8 <__mulsi3+0xc>
+ 104:	00008067          	ret
+
+Disassembly of section .text.putchar:
+
+00000108 <putchar>:
+ 108:	000017b7          	lui	a5,0x1
+ 10c:	06a7a423          	sw	a0,104(a5) # 1068 <io>
+ 110:	00008067          	ret
