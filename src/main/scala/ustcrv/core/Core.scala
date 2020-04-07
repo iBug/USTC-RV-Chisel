@@ -28,6 +28,9 @@ class Core extends Module {
   val regFile = Module(new RegisterFile(32, 5)).io
   val branchComp = Module(new BranchComp(32)).io
   val immGen = Module(new ImmGen).io
+  val pc = withClockAndReset (clock, reset.asBool | io.pcReset) {
+    Module(new PC)
+  }.io
 
   val step = io.pcStep && RegNext(io.pcStep)
 
@@ -35,42 +38,68 @@ class Core extends Module {
   val wb = Wire(UInt(32.W))
 
   // Pipeline registers
-  val fe_inst = RegInit(Instructions.NOP)
-  val fe_pc = Reg(UInt())
+  val fd_inst = RegInit(Instructions.NOP)
+  val fd_pc = Reg(UInt())
 
   val de_control = Reg(Control.controlSignals)
   val de_regFile_dataA = Reg(UInt())
   val de_regFile_dataB = Reg(UInt())
+  val de_regFile_addrD = Reg(UInt())
   val de_pc = Reg(UInt())
   val de_immGen = Reg(UInt())
 
+  val em_control = Reg(Control.controlSignals)
   val em_alu = Reg(UInt())
+  val em_pc = Reg(UInt())
+  val em_regFile_dataB = Reg(UInt())
+  val em_regFile_addrD = Reg(UInt())
+
+  var mw_control = Reg(Control.controlSignals)
+  val mw_alu = Reg(UInt())
+  val mw_pc = Reg(UInt())
+  val mw_dmemDR = Reg(UInt())
+  val mw_regFile_addrD = Reg(UInt())
+
+  fd_pc := pc.out
+  fd_inst := io.imemOut
+
+  de_control := control.signals
+  de_immGen := immGen.out
+  de_pc := fd_pc
+  de_regFile_dataA := regFile.dataA
+  de_regFile_dataB := regFile.dataB
+  de_regFile_addrD := fd_inst(11, 7)
+
+  em_control := de_control
+  em_alu := alu.out
+  em_regFile_dataB := de_regFile_dataB
+  em_pc := de_pc
+  em_regFile_addrD := de_regFile_addrD
+
+  mw_control := em_control
+  mw_alu := em_alu
+  mw_pc := em_pc
+  mw_dmemDR := io.dmemDR
+  mw_regFile_addrD := em_regFile_addrD
 
   // CS61c slide p.48, left to right, with mods
   // IF
-  val pc = withClockAndReset (clock, reset.asBool | io.pcReset) {
-    Module(new PC)
-  }.io
   pc.sel := control.signals.PCSel
   pc.in := alu.out
   pc.en := io.enable | step
 
   io.imemIn := pc.out
-  io.pcValue := pc.out
-
-  fe_pc := pc.out
-  fe_inst := io.imemOut
 
   // ID
-  regFile.addrA := fe_inst(19, 15)
-  regFile.addrB := fe_inst(24, 20)
-  regFile.addrD := fe_inst(11, 7)
+  regFile.addrA := fd_inst(19, 15)
+  regFile.addrB := fd_inst(24, 20)
+  regFile.addrD := mw_regFile_addrD
   regFile.dataD := wb
-  regFile.regWEn := control.signals.RegWEn
+  regFile.regWEn := mw_control.RegWEn
 
-  control.inst := fe_inst
+  control.inst := fd_inst
 
-  immGen.in := fe_inst
+  immGen.in := fd_inst
   immGen.sel := control.signals.ImmSel
 
   branchComp.a := regFile.dataA
@@ -78,11 +107,7 @@ class Core extends Module {
   branchComp.brType := control.signals.BrType
   control.BrTaken := branchComp.taken
 
-  de_control := control.signals
-  de_immGen := immGen.out
-  de_pc := fe_pc
-  de_regFile_dataA := regFile.dataA
-  de_regFile_dataB := regFile.dataB
+  io.pcValue := pc.out
 
   // EX
   alu.a := Mux(de_control.ASel, de_pc, de_regFile_dataA)
@@ -90,16 +115,16 @@ class Core extends Module {
   alu.sel := de_control.ALUSel
 
   // MEM
-  io.dmemA := alu.out
-  io.dmemDW := regFile.dataB
-  io.dmemWE := control.signals.MemRW
-  io.dmemL := control.signals.MemLength
-  io.dmemS := control.signals.MemSign
+  io.dmemA := em_alu
+  io.dmemDW := em_regFile_dataB
+  io.dmemWE := em_control.MemRW
+  io.dmemL := em_control.MemLength
+  io.dmemS := em_control.MemSign
 
   // WB
-  wb := MuxLookup(control.signals.WBSel, 0.U(32.W), Array(
-    Control.WB_DM -> io.dmemDR,
-    Control.WB_ALU -> alu.out,
-    Control.WB_PC4 -> (pc.out + 4.U)
+  wb := MuxLookup(mw_control.WBSel, 0.U(32.W), Array(
+    Control.WB_DM -> mw_dmemDR,
+    Control.WB_ALU -> mw_alu,
+    Control.WB_PC4 -> (mw_pc + 4.U)
   ))
 }
