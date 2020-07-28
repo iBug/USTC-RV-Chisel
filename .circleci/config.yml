@@ -1,6 +1,11 @@
 version: 2.0
 jobs:
   build:
+    branches:
+      ignore:
+        - gh-pages
+        - pages-source
+        - site
     docker:
       - image: circleci/openjdk:8-jdk
     environment:
