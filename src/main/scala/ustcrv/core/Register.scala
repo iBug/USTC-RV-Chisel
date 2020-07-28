@@ -17,10 +17,11 @@ class RegisterFile(val wData: Int = 32, val wAddr: Int = 5) extends Module {
   val regCount = 1 << wAddr // Number of registers
   val r = RegInit(VecInit(Seq.fill(regCount)(0.U(wData.W))))
 
-  io.dataA := r(io.addrA)
-  io.dataB := r(io.addrB)
+  // x0 should be always zero
+  io.dataA := Mux(io.addrA === 0.U, 0.U(wData.W), r(io.addrA))
+  io.dataB := Mux(io.addrB === 0.U, 0.U(wData.W), r(io.addrB))
 
-  when (io.regWEn && io.addrD =/= 0.U) {  // x0 should be always zero
+  when (io.regWEn && io.addrD =/= 0.U) {
     r(io.addrD) := io.dataD
   }
 }

@@ -85,16 +85,15 @@ class Core extends Module {
   }.otherwise {
     fd_pc := pc.out
     fd_inst := io.imemOut
+    de_control := control.signals
+    de_immGen := immGen.out
+    de_pc := fd_pc
+    de_regFile_dataA := regFile.dataA
+    de_regFile_dataB := regFile.dataB
+    de_regFile_addrD := fd_inst(11, 7)
+    de_regFile_addrA := regFile.addrA
+    de_regFile_addrB := regFile.addrB
   }
-
-  de_control := control.signals
-  de_immGen := immGen.out
-  de_pc := fd_pc
-  de_regFile_dataA := regFile.dataA
-  de_regFile_dataB := regFile.dataB
-  de_regFile_addrD := fd_inst(11, 7)
-  de_regFile_addrA := regFile.addrA
-  de_regFile_addrB := regFile.addrB
 
   em_control := de_control
   em_alu := alu.out
@@ -135,12 +134,9 @@ class Core extends Module {
   control.BrTaken := branchComp.taken
 
   // EX
-  val dataA = Wire(UInt())
-  val dataB = Wire(UInt())
-
-  dataA := Mux(em_regFile_addrD === de_regFile_addrA && de_regFile_addrA =/= 0.U, em_alu,
+  val dataA = Mux(em_regFile_addrD === de_regFile_addrA && de_regFile_addrA =/= 0.U, em_alu,
     Mux(mw_regFile_addrD === de_regFile_addrA && de_regFile_addrA =/= 0.U, wb, de_regFile_dataA))
-  dataB := Mux(em_regFile_addrD === de_regFile_addrB && de_regFile_addrB =/= 0.U, em_alu,
+  val dataB = Mux(em_regFile_addrD === de_regFile_addrB && de_regFile_addrB =/= 0.U, em_alu,
     Mux(mw_regFile_addrD === de_regFile_addrB && de_regFile_addrB =/= 0.U, wb, de_regFile_dataB))
 
   alu.a := Mux(de_control.ASel, de_pc, dataA)
