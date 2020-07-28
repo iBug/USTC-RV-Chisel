@@ -9,12 +9,10 @@ import scala.util.control.Breaks._
 import org.scalatest.{Matchers, FlatSpec}
 
 class PCSpec extends ChiselFlatSpec {
-  behavior of "PCSpec"
-
-  it should "work" in {
-    chisel3.iotesters.Driver(() => new PC) {
+  "PC" should "work" in {
+    chisel3.iotesters.Driver.execute(Array(), () => new PC) {
       c => new PCTester(c)
-    } should be(true)
+    } should be (true)
   }
 }
 
