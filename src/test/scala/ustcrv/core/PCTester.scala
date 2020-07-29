@@ -6,7 +6,6 @@ import chisel3.iotesters._
 
 import scala.io.Source
 import scala.util.control.Breaks._
-import org.scalatest.{Matchers, FlatSpec}
 
 class PCSpec extends ChiselFlatSpec {
   "PC" should "work" in {
